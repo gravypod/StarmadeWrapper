@@ -150,7 +150,6 @@ public class DataSaver {
 	}
 	
 	public User load(final String name) {
-	
 		if (!exists(name)) {
 			return defaultUser(name);
 		}
@@ -159,6 +158,7 @@ public class DataSaver {
 			reader.getConfig().setClassTag("User", User.class);
 			final User u = reader.read(User.class);
 			u.factions = new ArrayList<String>(u.getFactions());
+			u.name = u.name.toLowerCase();
 			return u;
 		} catch (final Exception e) {
 			return defaultUser(name);
@@ -169,7 +169,7 @@ public class DataSaver {
 	private User defaultUser(final String name) {
 	
 		final User u = new User();
-		u.name = name;
+		u.name = name.toLowerCase();
 		u.setLocation(2, 2, 2);
 		u.factions = new ArrayList<String>();
 		u.add("all");

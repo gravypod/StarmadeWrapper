@@ -30,7 +30,6 @@ public class ScriptManager {
 	}
 	
 	/**
-	 * 
 	 * @param commands
 	 * @param scriptDirectory
 	 */
@@ -55,7 +54,7 @@ public class ScriptManager {
 				
 				script.runScript();
 				command = new ScriptCommand(script);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				continue;
 			}
 			

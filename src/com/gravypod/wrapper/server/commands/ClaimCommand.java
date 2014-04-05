@@ -80,7 +80,7 @@ public class ClaimCommand extends Command {
 								pm(user, "You have been sent " + ammount + " of the block " + block);
 							}
 						} else {
-							Stack<Scalar> aguments = new Stack<Scalar>();
+							final Stack<Scalar> aguments = new Stack<Scalar>();
 							aguments.addElement(SleepUtils.getArrayWrapper(Arrays.asList(args)));
 							aguments.addElement(SleepUtils.getScalar(u.lastVotes));
 							aguments.addElement(SleepUtils.getScalar(user));
@@ -155,7 +155,7 @@ public class ClaimCommand extends Command {
 		loader = new ScriptLoader();
 		loader.addGlobalBridge(new StarmadeScriptBridge(getServer()));
 		
-		File claimScript = new File(getServer().getDataFolder(), "claim.sl");
+		final File claimScript = new File(getServer().getDataFolder(), "claim.sl");
 		
 		if (claimScript.exists()) {
 			try {
@@ -163,9 +163,9 @@ public class ClaimCommand extends Command {
 				if (script != null) {
 					script.runScript();
 				}
-			} catch (YourCodeSucksException e) {
+			} catch (final YourCodeSucksException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}

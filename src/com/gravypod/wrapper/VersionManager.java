@@ -40,11 +40,11 @@ public class VersionManager {
 		String mirrorUsed;
 		
 		try {
-			List<String> mirrors = getMirrors();
+			final List<String> mirrors = getMirrors();
 			
 			mirrorUsed = mirrors.get((int) (Math.random() * mirrors.size()));
-		} catch (IOException e) {
-			mirrorUsed = STARMADE_BUILD_SERVER;
+		} catch (final IOException e) {
+			mirrorUsed = VersionManager.STARMADE_BUILD_SERVER;
 		}
 		
 		mirror = mirrorUsed;
@@ -71,7 +71,6 @@ public class VersionManager {
 		fos.close();
 		rbc.close();
 		
-		
 		ServerWapper.getLogger().info("Download finished. ");
 		
 		if (isInstalled() && backup) {
@@ -88,12 +87,11 @@ public class VersionManager {
 		}
 		ServerWapper.getLogger().info("Installing update.");
 		
-		File starmadeUpdate = new File("starmade-latest.zip");
+		final File starmadeUpdate = new File("starmade-latest.zip");
 		
 		if (starmadeUpdate.length() != fileSize) {
 			throw new IOException("File downloaded is the incorrect size!");
 		}
-		
 		
 		ZipUtils.extract(starmadeUpdate, starmadeDirectory);
 		ServerWapper.getLogger().info("Update has finished.");

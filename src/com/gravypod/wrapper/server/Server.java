@@ -260,7 +260,7 @@ public class Server implements Runnable {
 		commands.put("delwarp", new DelWarpCommand());
 		commands.put("setfactionowner", new FactionOwnerCommand());
 		commands.put("permit", new PermitCommand());
-		commands.put("stuck", new StuckCommand());
+		//commands.put("stuck", new StuckCommand());
 		commands.put("tp", new TpCommand());
 		commands.put("claim", new ClaimCommand());
 		commands.put("reload", new ReloadCommand());

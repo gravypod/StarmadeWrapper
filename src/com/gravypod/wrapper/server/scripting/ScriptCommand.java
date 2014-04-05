@@ -13,7 +13,7 @@ public class ScriptCommand extends Command {
 	
 	private final ScriptInstance script;
 	
-	public ScriptCommand(ScriptInstance script) {
+	public ScriptCommand(final ScriptInstance script) {
 	
 		this.script = script;
 	}
