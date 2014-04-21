@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,7 +27,6 @@ import com.gravypod.wrapper.server.commands.HelpCommand;
 import com.gravypod.wrapper.server.commands.LocationCommand;
 import com.gravypod.wrapper.server.commands.PermitCommand;
 import com.gravypod.wrapper.server.commands.ReloadCommand;
-import com.gravypod.wrapper.server.commands.StuckCommand;
 import com.gravypod.wrapper.server.commands.TpCommand;
 import com.gravypod.wrapper.server.commands.WarpCommand;
 import com.gravypod.wrapper.server.scripting.ScriptManager;
@@ -34,11 +36,15 @@ public class Server implements Runnable {
 	
 	private PrintWriter writer;
 	
+	private final List<ChatListener> chatListeners = new ArrayList<ChatListener>();
+	
 	private final Map<String, User> users;
 	
 	private final Map<String, Command> commands = new HashMap<String, Command>();
 	
 	private final File dataFolder;
+	
+	private final AtomicBoolean running = new AtomicBoolean(true);
 	
 	private final WarpList warpList;
 	
@@ -54,7 +60,7 @@ public class Server implements Runnable {
 	
 	private final AtomicReference<Process> starmade = new AtomicReference<Process>();
 	
-	private final MessageProcessor messageProcessor = new MessageProcessor(this, Server.messages);
+	private final MessageProcessor messageProcessor = new MessageProcessor(this, Server.messages, chatListeners);
 	
 	private final ScriptManager scriptManager = new ScriptManager(this);
 	
@@ -260,7 +266,7 @@ public class Server implements Runnable {
 		commands.put("delwarp", new DelWarpCommand());
 		commands.put("setfactionowner", new FactionOwnerCommand());
 		commands.put("permit", new PermitCommand());
-		//commands.put("stuck", new StuckCommand());
+		// commands.put("stuck", new StuckCommand());
 		commands.put("tp", new TpCommand());
 		commands.put("claim", new ClaimCommand());
 		commands.put("reload", new ReloadCommand());
@@ -329,4 +335,23 @@ public class Server implements Runnable {
 		return starmade;
 	}
 	
+	public AtomicBoolean getRunning() {
+	
+		return running;
+	}
+	
+	public List<ChatListener> getChatListeners() {
+	
+		return chatListeners;
+	}
+	
+	public void registerChatListener(ChatListener chat) {
+	
+		chatListeners.add(chat);
+	}
+	
+	public void unregisterChatListener(ChatListener chat) {
+	
+		chatListeners.remove(chat);
+	}
 }

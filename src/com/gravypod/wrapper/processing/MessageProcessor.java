@@ -1,9 +1,11 @@
 package com.gravypod.wrapper.processing;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWapper;
+import com.gravypod.wrapper.server.ChatListener;
 import com.gravypod.wrapper.server.Server;
 
 public class MessageProcessor extends Thread {
@@ -12,10 +14,13 @@ public class MessageProcessor extends Thread {
 	
 	private final Server server;
 	
-	public MessageProcessor(final Server server, final BlockingQueue<String> messages) {
+	private final List<ChatListener> chatListeners;
+	
+	public MessageProcessor(final Server server, final BlockingQueue<String> messages, List<ChatListener> chatListeners) {
 	
 		this.server = server;
 		this.messages = messages;
+		this.chatListeners = chatListeners;
 		setName("MessagePrwocessor-Thread");
 		setPriority(Thread.MIN_PRIORITY);
 		setDaemon(true);
@@ -119,6 +124,10 @@ public class MessageProcessor extends Thread {
 		final String message = line.substring(colonIndex + 1).trim(); // Everything
 																		// after
 																		// colon
+		
+		for (ChatListener listener : chatListeners) { 
+			listener.chat(user, message);
+		}
 		
 		if (!message.startsWith("!")) {
 			return;

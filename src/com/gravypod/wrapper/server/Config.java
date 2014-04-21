@@ -1,5 +1,6 @@
 package com.gravypod.wrapper.server;
 
+
 public class Config {
 	
 	/**
@@ -28,5 +29,11 @@ public class Config {
 	public boolean backup;
 	
 	public boolean donorsTpOthers;
+	
+	public int adminPanelPort;
+	
+	public String adminPanelPass;
+
+	public boolean usePanel;
 	
 }
