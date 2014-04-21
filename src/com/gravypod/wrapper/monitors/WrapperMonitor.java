@@ -145,7 +145,7 @@ public class WrapperMonitor extends NanoHTTPD {
 	
 	private boolean isValidAuth(String id) {
 	
-		return id == null || !authKeys.containsKey(id);
+		return id != null && authKeys.containsKey(id);
 	}
 	
 	private String getPage(String name) {
