@@ -16,7 +16,7 @@ public class FixedSizeArrayList<T> extends ArrayList<T> {
 	@Override
 	public boolean add(T t) {
 	
-		if (size() > (maxIndex + 1)) {
+		if (size() > maxIndex) {
 			remove(0);
 		}
 		return super.add(t);
