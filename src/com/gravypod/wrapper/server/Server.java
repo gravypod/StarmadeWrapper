@@ -38,6 +38,8 @@ public class Server implements Runnable {
 	
 	private final List<ChatListener> chatListeners = new ArrayList<ChatListener>();
 	
+	private final List<LoginListener> loginListeners = new ArrayList<LoginListener>();
+	
 	private final Map<String, User> users;
 	
 	private final Map<String, Command> commands = new HashMap<String, Command>();
@@ -60,7 +62,7 @@ public class Server implements Runnable {
 	
 	private final AtomicReference<Process> starmade = new AtomicReference<Process>();
 	
-	private final MessageProcessor messageProcessor = new MessageProcessor(this, Server.messages, chatListeners);
+	private final MessageProcessor messageProcessor = new MessageProcessor(this, Server.messages, chatListeners, loginListeners);
 	
 	private final ScriptManager scriptManager = new ScriptManager(this);
 	
@@ -353,5 +355,15 @@ public class Server implements Runnable {
 	public void unregisterChatListener(ChatListener chat) {
 	
 		chatListeners.remove(chat);
+	}
+	
+	public void registerLoginListener(LoginListener loginListener) {
+	
+		loginListeners.add(loginListener);
+	}
+	
+	public void unregisterLoginListener(LoginListener loginListener) {
+	
+		loginListeners.remove(loginListener);
 	}
 }

@@ -1,6 +1,5 @@
 package com.gravypod.wrapper.server;
 
-
 public class Config {
 	
 	/**
@@ -33,7 +32,7 @@ public class Config {
 	public int adminPanelPort;
 	
 	public String adminPanelPass;
-
+	
 	public boolean usePanel;
 	
 }

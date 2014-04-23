@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.gravypod.wrapper.FixedSizeArrayList;
 import com.gravypod.wrapper.server.ChatListener;
+import com.gravypod.wrapper.server.LoginListener;
 import com.gravypod.wrapper.server.Server;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -35,21 +36,26 @@ public class WrapperMonitor extends NanoHTTPD {
 	public WrapperMonitor(int port, Server server, String masterPassword) {
 	
 		super(port);
-		
+		server.registerLoginListener(new LoginListener() {
+			
+			@Override
+			public void logout(String username) {
+			
+				updateLog("[LOGOUT] " + username + " has logged out");
+			}
+			
+			@Override
+			public void login(String username) {
+			
+				updateLog("[LOGIN] " + username + " has logged in");
+			}
+		});
 		server.registerChatListener(new ChatListener() {
 			
 			@Override
 			public void chat(String sender, String message) {
 			
-				chatMessages.add("[CHAT] " + sender + ": " + message);
-				
-				StringBuilder builder = new StringBuilder();
-				for (String s : chatMessages) {
-					builder.append(s + "\r\n");
-				}
-				
-				currentChat.set(builder.toString());
-				
+				updateLog("[CHAT] " + sender + ": " + message);
 			}
 		});
 		this.server = server;
@@ -129,7 +135,6 @@ public class WrapperMonitor extends NanoHTTPD {
 		String enteredPassword = session.getParms().get("login");
 		
 		if (!enteredPassword.equals(masterPassword)) {
-			System.out.println("password wrong");
 			return false;
 		}
 		
@@ -159,5 +164,16 @@ public class WrapperMonitor extends NanoHTTPD {
 		}
 		
 		return sb.toString();
+	}
+	
+	public void updateLog(String message) {
+	
+		chatMessages.add(message);
+		StringBuilder builder = new StringBuilder();
+		for (String s : chatMessages) {
+			builder.append(s + "\r\n");
+		}
+		
+		currentChat.set(builder.toString());
 	}
 }

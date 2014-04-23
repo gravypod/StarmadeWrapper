@@ -170,14 +170,14 @@
 			
 			lines.forEach(function (line) {
 				if (!(cText.indexOf(line) != -1)) {
-					if (line.indexOf("[CHAT] ") != -1) {
-						var l = line.substring(line.indexOf("[CHAT] "), line.length);
-						cprint(l);
-					} else if (!searchArray(line, filteredMessages)) {
-						if (line.length > 1) {
-							cprint(line.substring(line.indexOf("]") + 1));
-						}
-					}
+					//if (line.indexOf("[CHAT] ") != -1) {
+					//	var l = line.substring(line.indexOf("[CHAT] "), line.length);
+						cprint(line);
+					//} else if (!searchArray(line, filteredMessages)) {
+					//	if (line.length > 1) {
+					//		cprint(line.substring(line.indexOf("]") + 1));
+					//	}
+					//}
 					cText += line;
 				}
 			});
@@ -266,7 +266,7 @@
 		
 		function addLine(l) {
 			var date = new Date();
-			CONSOLE.echo("[" + date.toLocaleTimeString() + "]" + l.trim());
+			CONSOLE.echo("[" + date.toLocaleTimeString() + "] " + l.trim());
 		}
 		
 		window.setInterval(task, 1000);

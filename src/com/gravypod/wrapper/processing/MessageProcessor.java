@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWapper;
 import com.gravypod.wrapper.server.ChatListener;
+import com.gravypod.wrapper.server.LoginListener;
 import com.gravypod.wrapper.server.Server;
 
 public class MessageProcessor extends Thread {
@@ -14,12 +15,15 @@ public class MessageProcessor extends Thread {
 	
 	private final Server server;
 	
+	private final List<LoginListener> loginListeners;
+	
 	private final List<ChatListener> chatListeners;
 	
-	public MessageProcessor(final Server server, final BlockingQueue<String> messages, List<ChatListener> chatListeners) {
+	public MessageProcessor(final Server server, final BlockingQueue<String> messages, List<ChatListener> chatListeners, List<LoginListener> loginListeners) {
 	
 		this.server = server;
 		this.messages = messages;
+		this.loginListeners = loginListeners;
 		this.chatListeners = chatListeners;
 		setName("MessagePrwocessor-Thread");
 		setPriority(Thread.MIN_PRIORITY);
@@ -69,6 +73,9 @@ public class MessageProcessor extends Thread {
 		
 		final String username = newMessage.substring(0, firstString).trim();
 		System.out.println("Login " + username);
+		for (LoginListener login : loginListeners) {
+			login.login(username);
+		}
 		server.fireLogin(username);
 		
 	}
@@ -78,6 +85,9 @@ public class MessageProcessor extends Thread {
 		line = line.replace(IdentifierConstants.logoutMessageIdentifier, "");
 		final String user = line.substring(0, line.indexOf(' '));
 		final String[] location = LocationUtils.extractLocationString(line);
+		for (LoginListener login : loginListeners) {
+			login.login(user);
+		}
 		try {
 			final int x = Integer.parseInt(location[0]);
 			final int y = Integer.parseInt(location[1]);
