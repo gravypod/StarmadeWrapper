@@ -65,7 +65,7 @@ public class VersionManager {
 		final URL website = new URL(buildURL);
 		final ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		final int fileSize = fileSizes.get(latestBuild());
-		ServerWapper.getLogger().info("Downloading downloading the latest version of starmade. This build can be found here: " + buildURL + ". The file is expected to be " + fileSize + " bytes.");
+		ServerWapper.getLogger().info("Downloading the latest version of starmade. This build can be found here: " + buildURL + ". The file is expected to be " + fileSize + " bytes.");
 		final FileOutputStream fos = new FileOutputStream("starmade-latest.zip");
 		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 		fos.close();
