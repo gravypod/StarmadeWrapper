@@ -21,4 +21,9 @@ public class Warp {
 		
 	}
 	
+	@Override
+	public String toString() {
+		return locationOneString() + " => " + locationTwoString();
+	}
+	
 }
