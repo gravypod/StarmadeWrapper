@@ -13,8 +13,7 @@ public class ShutdownMonitor extends Thread {
 	
 	@Override
 	public void run() {
-	
 		server.logoutAll();
-		server.getStarmade().get().destroy();
+		server.getConsoleData().kill();
 	}
 }

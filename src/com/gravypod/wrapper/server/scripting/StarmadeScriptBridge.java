@@ -12,16 +12,17 @@ import sleep.runtime.Scalar;
 import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
 
-import com.gravypod.wrapper.server.Server;
-import com.gravypod.wrapper.server.User;
+import com.gravypod.starmadewrapper.Sector;
+import com.gravypod.starmadewrapper.Server;
+import com.gravypod.starmadewrapper.User;
 
 public class StarmadeScriptBridge implements Loadable {
 	
 	private final Server s;
 	
-	public StarmadeScriptBridge(final Server s) {
+	public StarmadeScriptBridge(final Server server) {
 	
-		this.s = s;
+		this.s = server;
 	}
 	
 	@Override
@@ -114,15 +115,18 @@ public class StarmadeScriptBridge implements Loadable {
 				final Map<String, Integer> m = new HashMap<String, Integer>();
 				
 				if (u != null) {
-					m.put("x", u.x);
-					m.put("y", u.y);
-					m.put("z", u.z);
+					Sector sector = u.getSector();
+					m.put("x", sector.getX());
+					m.put("y", sector.getY());
+					m.put("z", sector.getZ());
 				}
 				
 				return SleepUtils.getHashWrapper(m);
 				
 			}
 		});
+		
+		
 	}
 	
 }

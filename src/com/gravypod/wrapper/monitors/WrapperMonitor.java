@@ -7,9 +7,13 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.gravypod.starmadewrapper.plugins.events.EventHandler;
+import com.gravypod.starmadewrapper.plugins.events.Listener;
+import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
 import com.gravypod.wrapper.FixedSizeArrayList;
-import com.gravypod.wrapper.server.ChatListener;
-import com.gravypod.wrapper.server.LoginListener;
+import com.gravypod.wrapper.SSWPlugin;
 import com.gravypod.wrapper.server.Server;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -36,28 +40,28 @@ public class WrapperMonitor extends NanoHTTPD {
 	public WrapperMonitor(int port, Server server, String masterPassword) {
 	
 		super(port);
-		server.registerLoginListener(new LoginListener() {
-			
-			@Override
-			public void logout(String username) {
-			
-				updateLog("[LOGOUT] " + username + " has logged out");
-			}
-			
-			@Override
-			public void login(String username) {
-			
-				updateLog("[LOGIN] " + username + " has logged in");
-			}
-		});
-		server.registerChatListener(new ChatListener() {
-			
-			@Override
-			public void chat(String sender, String message) {
-			
-				updateLog("[CHAT] " + sender + ": " + message);
-			}
-		});
+		try {
+			server.getPluginManager().getEventManager().registerEvents(SSWPlugin.PLUGIN, new Listener() {
+				@EventHandler
+				public void login(LoginEvent event) {
+
+					updateLog("[LOGOUT] " + event.getUsername() + " has logged out");
+				}
+				@EventHandler
+				public void logout(LogoutEvent event) {
+
+					updateLog("[LOGIN] " + event.getUsername() + " has logged in");
+				}
+
+				@EventHandler
+				public void logout(ChatEvent event) {
+
+					updateLog("[CHAT] " + event.getUsername() + ": " + event.getMessage());
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		this.server = server;
 		this.masterPassword = masterPassword;
 	}
@@ -155,13 +159,15 @@ public class WrapperMonitor extends NanoHTTPD {
 	
 	private String getPage(String name) {
 	
-		InputStream in = getClass().getResourceAsStream("/html/" + name + ".html.txt");
+		InputStream in = getClass().getResourceAsStream("/html/" + name + ".html");
 		StringBuilder sb = new StringBuilder();
 		Scanner sc = new Scanner(in);
 		
 		while (sc.hasNextLine()) {
 			sb.append(sc.nextLine() + "\n");
 		}
+		
+		sc.close();
 		
 		return sb.toString();
 	}

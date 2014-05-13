@@ -129,6 +129,8 @@ public class FileInfo {
 			out.add(sc.nextLine());
 		}
 		
+		sc.close();
+		
 		return out;
 	}
 	

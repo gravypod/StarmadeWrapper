@@ -2,53 +2,32 @@ package com.gravypod.wrapper.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
+import com.gravypod.starmadewrapper.plugins.PluginManager;
+import com.gravypod.starmadewrapper.plugins.commands.CommandManager;
 import com.gravypod.wrapper.VersionManager;
 import com.gravypod.wrapper.monitors.ShutdownMonitor;
 import com.gravypod.wrapper.processing.MessageProcessor;
-import com.gravypod.wrapper.server.commands.AddWarpCommand;
-import com.gravypod.wrapper.server.commands.ClaimCommand;
-import com.gravypod.wrapper.server.commands.DelWarpCommand;
-import com.gravypod.wrapper.server.commands.FactionOwnerCommand;
 import com.gravypod.wrapper.server.commands.HelpCommand;
 import com.gravypod.wrapper.server.commands.LocationCommand;
-import com.gravypod.wrapper.server.commands.PermitCommand;
-import com.gravypod.wrapper.server.commands.ReloadCommand;
-import com.gravypod.wrapper.server.commands.TpCommand;
-import com.gravypod.wrapper.server.commands.WarpCommand;
 import com.gravypod.wrapper.server.scripting.ScriptManager;
-import com.gravypod.wrapper.warps.WarpList;
 
-public class Server implements Runnable {
+public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
-	private PrintWriter writer;
-	
-	private final List<ChatListener> chatListeners = new ArrayList<ChatListener>();
-	
-	private final List<LoginListener> loginListeners = new ArrayList<LoginListener>();
+	private final Logger logger = Logger.getLogger(getClass().getName());
 	
 	private final Map<String, User> users;
-	
-	private final Map<String, Command> commands = new HashMap<String, Command>();
 	
 	private final File dataFolder;
 	
 	private final AtomicBoolean running = new AtomicBoolean(true);
-	
-	private final WarpList warpList;
 	
 	private final Config config;
 	
@@ -56,17 +35,17 @@ public class Server implements Runnable {
 	
 	private final FileInfo fileInfo;
 	
-	private final ProcessBuilder builder;
+	private final BlockingQueue<String> messages = new PriorityBlockingQueue<String>();
 	
-	private static final BlockingQueue<String> messages = new PriorityBlockingQueue<String>();
+	private final MessageProcessor messageProcessor = new MessageProcessor(this, messages);
 	
-	private final AtomicReference<Process> starmade = new AtomicReference<Process>();
-	
-	private final MessageProcessor messageProcessor = new MessageProcessor(this, Server.messages, chatListeners, loginListeners);
+	private final ConsoleManager consoleData;
 	
 	private final ScriptManager scriptManager = new ScriptManager(this);
 	
-	private final ReentrantLock lock = new ReentrantLock();
+	private final CommandManager commandManager = new CommandManager(this);
+	
+	private final PluginManager pluginManager = new PluginManager(logger, this, commandManager);
 	
 	public Server(final File directory) {
 	
@@ -86,16 +65,15 @@ public class Server implements Runnable {
 		
 		final FileInfo fileInfo = new FileInfo(directory, getStarmadeDirectory());
 		
-		warpList = dataSaver.loadWarpList();
-		
 		this.fileInfo = fileInfo;
 		
 		this.dataSaver = dataSaver;
 		
-		builder = creatBuilder();
+		final File starmadeDirectory = getStarmadeDirectory();
 		
+		consoleData = new ConsoleManager(config, starmadeDirectory, messages);
 		try {
-			final File starmadeDirectory = getStarmadeDirectory();
+			
 			final VersionManager versionManager = new VersionManager(starmadeDirectory);
 			if (config.update && versionManager.needsUpdate()) {
 				versionManager.downloadUpdate(config.backup);
@@ -111,102 +89,11 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 	
-		try {
-			
-			registerCommands();
-			
-			starmade.set(builder.start());
-			
-			setWriter(starmade.get().getOutputStream());
-			
-			final Scanner sc = new Scanner(starmade.get().getInputStream());
-			
-			while (sc.hasNextLine()) {
-				final String line = sc.nextLine();
-				Server.messages.add(line);
-			}
-			sc.close();
-			
-			try {
-				starmade.get().waitFor(); // Wait for the server to exit
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
-			starmade.get().destroy();
-			
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		registerCommands();
+		pluginManager.loadPlugins();
+		consoleData.run();
+		pluginManager.disablePlugins();
 		
-	}
-	
-	public synchronized void exec(final String command) {
-	
-		lock.lock();
-		writer.println(command);
-		writer.flush();
-		lock.unlock();
-	}
-	
-	public synchronized void masExec(final String ... commands) {
-	
-		lock.lock();
-		for (final String s : commands) {
-			writer.println(s);
-		}
-		writer.flush();
-		lock.unlock();
-	}
-	
-	/**
-	 * Warning, will alter array that was input
-	 * 
-	 * @param user
-	 * @param messages
-	 */
-	public void pm(final String user, final String ... messages) {
-	
-		final String[] ms = new String[messages.length];
-		for (int i = 0; i < messages.length; i++) {
-			ms[i] = "/pm " + user + " " + messages[i];
-		}
-		
-		masExec(ms);
-	}
-	
-	public synchronized void pm(final String user, final String message) {
-	
-		exec("/pm " + user + " " + message);
-	}
-	
-	public synchronized void tp(final String user, final int x, final int y, final int z) {
-	
-		exec("/change_sector_for " + user + " " + x + " " + y + " " + z);
-	}
-	
-	public void tp(final String sender, final String x, final String y, final String z) {
-	
-		exec("/change_sector_for " + sender + " " + x + " " + y + " " + z);
-	}
-	
-	public synchronized void give(final String user, final int item, final int amount) {
-	
-		exec("/giveid " + user + " " + item + " " + amount);
-	}
-	
-	public synchronized PrintWriter getWriter() {
-	
-		return writer;
-	}
-	
-	public synchronized void setWriter(final OutputStream os) {
-	
-		writer = new PrintWriter(os);
-	}
-	
-	public synchronized Map<String, Command> getCommands() {
-	
-		return commands;
 	}
 	
 	public synchronized boolean logoutUser(final String name, final int x, final int y, final int z) {
@@ -240,11 +127,6 @@ public class Server implements Runnable {
 		return users;
 	}
 	
-	public WarpList getWarpList() {
-	
-		return warpList;
-	}
-	
 	public void logoutAll() {
 	
 		for (final User user : users.values()) {
@@ -259,30 +141,10 @@ public class Server implements Runnable {
 	
 	public void registerCommands() {
 	
-		commands.clear();
+		getCommandManager().registerCommand("help", new HelpCommand());
+		getCommandManager().registerCommand("location", new LocationCommand());
 		
-		commands.put("help", new HelpCommand());
-		commands.put("location", new LocationCommand());
-		commands.put("warp", new WarpCommand());
-		commands.put("addwarp", new AddWarpCommand());
-		commands.put("delwarp", new DelWarpCommand());
-		commands.put("setfactionowner", new FactionOwnerCommand());
-		commands.put("permit", new PermitCommand());
-		// commands.put("stuck", new StuckCommand());
-		commands.put("tp", new TpCommand());
-		commands.put("claim", new ClaimCommand());
-		commands.put("reload", new ReloadCommand());
-		
-		scriptManager.loadScripts(commands, new File(getDataFolder(), "scripts"));
-		
-		for (final Command c : commands.values()) {
-			c.setServer(this);
-		}
-		
-		for (final Command c : commands.values()) {
-			c.init();
-		}
-		
+		scriptManager.loadScripts(getCommandManager(), new File(getDataFolder(), "scripts"));
 	}
 	
 	public Config getConfig() {
@@ -305,36 +167,9 @@ public class Server implements Runnable {
 		return fileInfo;
 	}
 	
-	private ProcessBuilder creatBuilder() {
-	
-		final ProcessBuilder builder = new ProcessBuilder(config.launchCommand.split(" "));
-		builder.redirectErrorStream(true);
-		builder.directory(getStarmadeDirectory());
-		return builder;
-	}
-	
 	private void addShutdownHooks() {
 	
 		Runtime.getRuntime().addShutdownHook(new ShutdownMonitor(this));
-	}
-	
-	public void fireLogout(final String user) {
-	
-		for (final Command c : commands.values()) {
-			c.onLogout(user);
-		}
-	}
-	
-	public void fireLogin(final String username) {
-	
-		for (final Command c : commands.values()) {
-			c.onLogin(username);
-		}
-	}
-	
-	public AtomicReference<Process> getStarmade() {
-	
-		return starmade;
 	}
 	
 	public AtomicBoolean getRunning() {
@@ -342,28 +177,70 @@ public class Server implements Runnable {
 		return running;
 	}
 	
-	public List<ChatListener> getChatListeners() {
+	public CommandManager getCommandManager() {
 	
-		return chatListeners;
+		return commandManager;
 	}
 	
-	public void registerChatListener(ChatListener chat) {
+	public PluginManager getPluginManager() {
 	
-		chatListeners.add(chat);
+		return pluginManager;
 	}
 	
-	public void unregisterChatListener(ChatListener chat) {
+	@Override
+	public List<String> getDonors() {
 	
-		chatListeners.remove(chat);
+		return getFileInfo().getDonors();
 	}
 	
-	public void registerLoginListener(LoginListener loginListener) {
+	@Override
+	public List<String> getAdmins() {
 	
-		loginListeners.add(loginListener);
+		return getFileInfo().getAdmins();
 	}
 	
-	public void unregisterLoginListener(LoginListener loginListener) {
+	@Override
+	public void exec(String command) {
 	
-		loginListeners.remove(loginListener);
+		consoleData.exec(command);
+	}
+	
+	@Override
+	public void tp(String username, int x, int y, int z) {
+	
+		consoleData.tp(username, x, y, z);
+	}
+	
+	@Override
+	public void tp(String username, String x, String y, String z) {
+	
+		consoleData.tp(username, x, y, z);
+	}
+	
+	@Override
+	public void pm(String user, String... message) {
+	
+		consoleData.pm(user, message);
+		
+	}
+	
+	@Override
+	public void give(String user, int item, int amount) {
+	
+		consoleData.give(user, item, amount);
+		
+	}
+	
+	@Override
+	public void pm(String username, String message) {
+	
+		consoleData.pm(username, message);
+		
+	}
+	
+	
+	public ConsoleManager getConsoleData() {
+	
+		return consoleData;
 	}
 }

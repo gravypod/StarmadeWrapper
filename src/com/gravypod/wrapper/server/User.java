@@ -3,9 +3,10 @@ package com.gravypod.wrapper.server;
 import java.util.Collections;
 import java.util.List;
 
+import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.wrapper.LocationUtils;
 
-public class User {
+public class User implements com.gravypod.starmadewrapper.User {
 	
 	public int x, y, z;
 	
@@ -77,6 +78,24 @@ public class User {
 	public synchronized String getName() {
 	
 		return name;
+	}
+
+	@Override
+	public String getUsername() {
+	
+		return getName();
+	}
+
+	@Override
+	public Sector getSector() {
+	
+		return new Sector(x, y, z);
+	}
+
+	@Override
+	public String getFactionOwned() {
+	
+		return getLeads();
 	}
 	
 }

@@ -1,12 +1,14 @@
 package com.gravypod.wrapper.processing;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import com.gravypod.starmadewrapper.plugins.events.Event;
+import com.gravypod.starmadewrapper.plugins.events.Events;
+import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
 import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWapper;
-import com.gravypod.wrapper.server.ChatListener;
-import com.gravypod.wrapper.server.LoginListener;
 import com.gravypod.wrapper.server.Server;
 
 public class MessageProcessor extends Thread {
@@ -15,16 +17,10 @@ public class MessageProcessor extends Thread {
 	
 	private final Server server;
 	
-	private final List<LoginListener> loginListeners;
-	
-	private final List<ChatListener> chatListeners;
-	
-	public MessageProcessor(final Server server, final BlockingQueue<String> messages, List<ChatListener> chatListeners, List<LoginListener> loginListeners) {
+	public MessageProcessor(final Server server, final BlockingQueue<String> messages) {
 	
 		this.server = server;
 		this.messages = messages;
-		this.loginListeners = loginListeners;
-		this.chatListeners = chatListeners;
 		setName("MessagePrwocessor-Thread");
 		setPriority(Thread.MIN_PRIORITY);
 		setDaemon(true);
@@ -54,7 +50,7 @@ public class MessageProcessor extends Thread {
 				}
 				
 			} catch (final InterruptedException e) {
-				return;
+				continue;
 			}
 			
 		}
@@ -72,11 +68,12 @@ public class MessageProcessor extends Thread {
 		}
 		
 		final String username = newMessage.substring(0, firstString).trim();
-		System.out.println("Login " + username);
-		for (LoginListener login : loginListeners) {
-			login.login(username);
+		
+		Event e = Events.fireEvent(new LoginEvent(username));
+		
+		if (e.isCancelled()) {
+			server.exec("/kick " + username);
 		}
-		server.fireLogin(username);
 		
 	}
 	
@@ -85,15 +82,12 @@ public class MessageProcessor extends Thread {
 		line = line.replace(IdentifierConstants.logoutMessageIdentifier, "");
 		final String user = line.substring(0, line.indexOf(' '));
 		final String[] location = LocationUtils.extractLocationString(line);
-		for (LoginListener login : loginListeners) {
-			login.login(user);
-		}
 		try {
 			final int x = Integer.parseInt(location[0]);
 			final int y = Integer.parseInt(location[1]);
 			final int z = Integer.parseInt(location[2]);
 			if (server.logoutUser(user, x, y, z)) {
-				server.fireLogout(user);
+				Events.fireEvent(new LogoutEvent(user));
 				ServerWapper.getLogger().info("Logging " + user + " out. He is in sector " + x + ", " + y + ", " + z);
 			}
 		} catch (final Exception e) {
@@ -135,8 +129,9 @@ public class MessageProcessor extends Thread {
 																		// after
 																		// colon
 		
-		for (ChatListener listener : chatListeners) { 
-			listener.chat(user, message);
+		Event event = Events.fireEvent(new ChatEvent(user, message));
+		if (event.isCancelled()) {
+			return;
 		}
 		
 		if (!message.startsWith("!")) {
@@ -151,7 +146,7 @@ public class MessageProcessor extends Thread {
 		
 		final String command = message.substring(1, firstSpace).trim();
 		
-		if (!server.getCommands().containsKey(command)) {
+		if (!server.getCommandManager().isRegistered(command)) {
 			server.pm(user, "The command " + command + " is unknown.");
 			return;
 		}
@@ -159,7 +154,7 @@ public class MessageProcessor extends Thread {
 		final String[] args = message.substring(firstSpace).trim().split(" ");
 		
 		try {
-			server.getCommands().get(command).run(user, args);
+			server.getCommandManager().execute(user, command, args);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

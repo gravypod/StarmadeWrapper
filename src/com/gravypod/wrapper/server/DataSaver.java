@@ -5,14 +5,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
-import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
-import com.gravypod.wrapper.warps.Warp;
-import com.gravypod.wrapper.warps.WarpList;
 
 /**
  * Save and load data
@@ -24,7 +20,7 @@ public class DataSaver {
 	/**
 	 * Files
 	 */
-	private final File userDataFolder, warpList, config;
+	private final File userDataFolder, config;
 	
 	/**
 	 * Create a {@link DataSaver} that will load and save data to <code>directory</code>
@@ -39,7 +35,6 @@ public class DataSaver {
 			userDataFolder.mkdirs();
 		}
 		
-		warpList = new File(directory, "warps.yml");
 		config = new File(directory, "config.yml");
 		
 	}
@@ -78,62 +73,6 @@ public class DataSaver {
 			e.printStackTrace();
 		}
 		return c;
-	}
-	
-	public void saveWarpList(final WarpList list) {
-	
-		YamlWriter writer = null;
-		try {
-			writer = new YamlWriter(new FileWriter(warpList));
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		writer.getConfig().setClassTag("WarpList", WarpList.class);
-		writer.getConfig().setClassTag("Warp", Warp.class);
-		try {
-			writer.write(list);
-			writer.close();
-		} catch (final YamlException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public WarpList loadWarpList() {
-	
-		if (!warpList.exists()) {
-			return defaultWarpList();
-		}
-		
-		final WarpList defaultWarpList = new WarpList();
-		
-		defaultWarpList.warps = new HashMap<String, Warp>();
-		defaultWarpList.setSaver(this);
-		final WarpList list;
-		try {
-			final YamlReader reader = new YamlReader(new FileReader(warpList));
-			reader.getConfig().setClassTag("WarpList", WarpList.class);
-			reader.getConfig().setClassTag("Warp", Warp.class);
-			list = reader.read(WarpList.class);
-			list.setSaver(this);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return defaultWarpList();
-		}
-		
-		if (list != null && list.warps != null) {
-			defaultWarpList.warps.putAll(list.warps);
-		}
-		
-		return defaultWarpList;
-		
-	}
-	
-	private WarpList defaultWarpList() {
-	
-		final WarpList list = new WarpList();
-		list.setSaver(this);
-		list.warps = new HashMap<String, Warp>();
-		return list;
 	}
 	
 	public boolean exists(final String username) {

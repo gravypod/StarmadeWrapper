@@ -37,6 +37,8 @@ public class ConsoleMonitor extends Thread {
 			
 		}
 		
+		sc.close();
+		
 		ServerWapper.getLogger().info("Closing out of " + getClass().getName());
 		
 	}

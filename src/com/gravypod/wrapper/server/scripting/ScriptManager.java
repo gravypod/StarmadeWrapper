@@ -2,19 +2,20 @@ package com.gravypod.wrapper.server.scripting;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Map;
 
 import sleep.runtime.ScriptInstance;
 import sleep.runtime.ScriptLoader;
 
+import com.gravypod.starmadewrapper.plugins.Plugin;
+import com.gravypod.starmadewrapper.plugins.commands.CommandManager;
+import com.gravypod.wrapper.SSWPlugin;
 import com.gravypod.wrapper.ServerWapper;
-import com.gravypod.wrapper.server.Command;
 import com.gravypod.wrapper.server.Server;
 
 public class ScriptManager {
 	
 	private final ScriptLoader loader = new ScriptLoader();
-	
+	private final Server server;
 	private final FileFilter scriptFileFilter = new FileFilter() {
 		
 		@Override
@@ -25,20 +26,21 @@ public class ScriptManager {
 	};
 	
 	public ScriptManager(final Server server) {
-	
+		this.server = server;
 		loader.addGlobalBridge(new StarmadeScriptBridge(server));
 	}
 	
 	/**
-	 * @param commands
+	 * @param commandManager
 	 * @param scriptDirectory
 	 */
-	public void loadScripts(final Map<String, Command> commands, final File scriptDirectory) {
+	public void loadScripts(final CommandManager commandManager, final File scriptDirectory) {
 	
 		if (!scriptDirectory.exists() || !scriptDirectory.isDirectory()) {
 			scriptDirectory.mkdirs();
 		}
-		
+
+		Plugin plugin = SSWPlugin.PLUGIN;
 		for (final File f : scriptDirectory.listFiles(scriptFileFilter)) {
 			ServerWapper.getLogger().info("Found the script: " + f.getName() + ". It is being loaded as a command.");
 			ScriptCommand command;
@@ -48,18 +50,19 @@ public class ScriptManager {
 			try {
 				final ScriptInstance script = loader.loadScript(f);
 				
-				if (commands.containsKey(name)) {
-					commands.remove(name);
+				if (commandManager.isRegistered(name)) {
+					commandManager.unregisterCommand(name);
 				}
 				
 				script.runScript();
 				command = new ScriptCommand(script);
+				server.getPluginManager().getEventManager().registerEvents(plugin, command);
 			} catch (final Exception e) {
 				continue;
 			}
 			
 			if (command != null) {
-				commands.put(name, command);
+				commandManager.registerCommand(name, command);
 			}
 			
 		}

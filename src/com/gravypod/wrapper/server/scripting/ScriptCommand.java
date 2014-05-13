@@ -7,9 +7,15 @@ import sleep.runtime.Scalar;
 import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
 
-import com.gravypod.wrapper.server.Command;
+import com.gravypod.starmadewrapper.User;
+import com.gravypod.starmadewrapper.plugins.commands.Command;
+import com.gravypod.starmadewrapper.plugins.events.EventHandler;
+import com.gravypod.starmadewrapper.plugins.events.EventPriority;
+import com.gravypod.starmadewrapper.plugins.events.Listener;
+import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
 
-public class ScriptCommand extends Command {
+public class ScriptCommand extends Command implements Listener {
 	
 	private final ScriptInstance script;
 	
@@ -19,11 +25,11 @@ public class ScriptCommand extends Command {
 	}
 	
 	@Override
-	public void run(final String user, final String ... args) {
-	
+	public void run(String username, User user, String... args) {
+
 		final Stack<Scalar> s = new Stack<Scalar>();
 		s.addElement(SleepUtils.getArrayWrapper(Arrays.asList(args)));
-		s.addElement(SleepUtils.getScalar(user));
+		s.addElement(SleepUtils.getScalar(username));
 		script.callFunction("&run", s);
 	}
 	
@@ -47,19 +53,19 @@ public class ScriptCommand extends Command {
 		script.callFunction("&init", new Stack<Scalar>());
 	}
 	
-	@Override
-	public void onLogin(final String username) {
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onLogin(LoginEvent event) {
 	
 		final Stack<Scalar> args = new Stack<Scalar>();
-		args.addElement(SleepUtils.getScalar(username));
+		args.addElement(SleepUtils.getScalar(event.getUsername()));
 		script.callFunction("&onLogin", args);
 	}
-	
-	@Override
-	public void onLogout(final String username) {
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onLogout(LogoutEvent event) {
 	
 		final Stack<Scalar> args = new Stack<Scalar>();
-		args.addElement(SleepUtils.getScalar(username));
+		args.addElement(SleepUtils.getScalar(event.getUsername()));
 		script.callFunction("&onLogout", args);
 	}
 	

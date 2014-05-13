@@ -2,24 +2,23 @@ package com.gravypod.wrapper.server.commands;
 
 import java.util.ArrayList;
 
-import com.gravypod.wrapper.server.Command;
+import com.gravypod.starmadewrapper.User;
+import com.gravypod.starmadewrapper.plugins.commands.Command;
 
 public class HelpCommand extends Command {
 	
 	private final ArrayList<String> helpMessages = new ArrayList<String>();
 	
 	private final String[] GENERIC_STRING_ARRAY = new String[0];
-	
 	@Override
-	public void run(final String user, final String ... args) {
-	
-		pm(user, helpMessages.toArray(GENERIC_STRING_ARRAY));
+	public void run(String username, User user, String... args) {
+		pm(username, helpMessages.toArray(GENERIC_STRING_ARRAY));
 	}
 	
 	@Override
 	public void init() {
 	
-		for (final Command c : getServer().getCommands().values()) {
+		for (final Command c : getServer().getCommandManager().getCommands()) {
 			final String help = c.getHelp();
 			if (help == null) {
 				continue;
