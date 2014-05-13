@@ -1,14 +1,11 @@
 package com.gravypod.wrapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import com.gravypod.wrapper.monitors.ConsoleMonitor;
-import com.gravypod.wrapper.monitors.WrapperMonitor;
-import com.gravypod.wrapper.server.Config;
 import com.gravypod.wrapper.server.Server;
 
 public class ServerWapper {
@@ -24,16 +21,7 @@ public class ServerWapper {
 		final File directory = ServerWapper.getDirectory();
 		
 		final Server server = new Server(directory);
-		Config config = server.getConfig();
 		
-		if (config.usePanel) {
-			WrapperMonitor adminCP = new WrapperMonitor(config.adminPanelPort, server, config.adminPanelPass);
-			try {
-				adminCP.start();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		final ConsoleMonitor consoleMonitor = new ConsoleMonitor(server);
 		consoleMonitor.start();
 		

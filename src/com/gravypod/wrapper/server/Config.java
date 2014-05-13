@@ -33,6 +33,4 @@ public class Config {
 	
 	public String adminPanelPass;
 	
-	public boolean usePanel;
-	
 }

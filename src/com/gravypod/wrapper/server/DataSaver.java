@@ -51,7 +51,6 @@ public class DataSaver {
 			c.backup = true;
 			c.update = true;
 			c.donorsTpOthers = false;
-			c.usePanel = true;
 			c.adminPanelPort = 453;
 			c.adminPanelPass = UUID.randomUUID().toString();
 			try {

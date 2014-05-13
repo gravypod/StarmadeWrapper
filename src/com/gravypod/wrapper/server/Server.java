@@ -238,9 +238,34 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		
 	}
 	
-	
 	public ConsoleManager getConsoleData() {
 	
 		return consoleData;
+	}
+	
+	@Override
+	public void stopServer() {
+		getRunning().set(false);
+		exec("/shutdown 0");
+	}
+	
+	@Override
+	public void restart(int time) {
+	
+		getRunning().set(true);
+		exec("/shutdown 60");
+	}
+
+	@Override
+	public void startServer() {
+		if (!isRunning()) {
+			getRunning().set(true);
+		}
+	}
+
+	@Override
+	public boolean isRunning() {
+	
+		return getRunning().get();
 	}
 }
