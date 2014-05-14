@@ -117,7 +117,6 @@ public class ServerConfig {
     }
 
     protected enum ConfigItem {
-        // some of these may be longs, have to check
         PROTECT_STARTING_SECTOR(ItemType.BOOL),
         ENABLE_SIMULATION(ItemType.BOOL),
         CONCURRENT_SIMULATION(ItemType.INTEGER),
@@ -206,7 +205,7 @@ public class ServerConfig {
         BLUEPRINT_BUY_WITH_BLOCKS(ItemType.BOOL),
         SQL_NIO_FILE_SIZE(ItemType.INTEGER);
 
-        private ItemType type; // there must be a better way to do this
+        private ItemType type;
 
         private ConfigItem(ItemType type) {
             this.type = type;

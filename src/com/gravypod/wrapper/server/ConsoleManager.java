@@ -116,6 +116,11 @@ public class ConsoleManager implements Runnable {
 
         exec("/ban_name " + user);
     }
+
+    public synchronized void setGodMode(final String user, final boolean enabled) {
+
+        exec("/god_mode " + user + " " + enabled);
+    }
 	
 	public synchronized PrintWriter getWriter() {
 	
