@@ -276,6 +276,12 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		consoleData.pm(username, message);
 		
 	}
+
+    @Override
+    public void ban(String user) {
+
+        consoleData.ban(user);
+    }
 	
 	public ConsoleManager getConsoleData() {
 	

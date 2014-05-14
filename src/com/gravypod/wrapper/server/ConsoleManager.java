@@ -111,6 +111,11 @@ public class ConsoleManager implements Runnable {
 	
 		exec("/giveid " + user + " " + item + " " + amount);
 	}
+
+    public synchronized void ban(final String user) {
+
+        exec("/ban_name " + user);
+    }
 	
 	public synchronized PrintWriter getWriter() {
 	
