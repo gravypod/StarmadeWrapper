@@ -176,7 +176,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
         return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
     }
 
-    public int getTrustSpeedLimit() {
+    public int getThrustSpeedLimit() {
 
         return serverConfig.getInt(ServerConfig.ConfigItem.THRUST_SPEED_LIMIT);
     }
