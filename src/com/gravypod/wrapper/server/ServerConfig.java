@@ -58,31 +58,38 @@ public class ServerConfig {
     }
 
     protected String getString(ConfigItem item) {
-        if (item.getType().equals("string")) {
+        if (item.getType() == ItemType.STRING) {
             return values.get(item);
         }
         return null;
     }
 
     protected int getInt(ConfigItem item) {
-        if (item.getType().equals("int")) {
+        if (item.getType() == ItemType.INTEGER) {
             return Integer.parseInt(values.get(item));
         }
         return 0;
     }
 
     protected double getDouble(ConfigItem item) {
-        if (item.getType().equals("double")) {
+        if (item.getType() == ItemType.DOUBLE) {
             return Double.parseDouble(values.get(item));
         }
         return 0D;
     }
 
     protected boolean getBoolean(ConfigItem item) {
-        if (item.getType().equals("boolean")) {
+        if (item.getType() == ItemType.BOOL) {
             return Boolean.parseBoolean(values.get(item));
         }
         return false;
+    }
+
+    protected long getLong(ConfigItem item) {
+        if (item.getType() == ItemType.LONG) {
+            return Long.parseLong(values.get(item));
+        }
+        return 0L;
     }
 
     protected void saveString(ConfigItem item, String value) {
@@ -111,104 +118,112 @@ public class ServerConfig {
 
     protected enum ConfigItem {
         // some of these may be longs, have to check
-        PROTECT_STARTING_SECTOR("boolean"),
-        ENABLE_SIMULATION("boolean"),
-        CONCURRENT_SIMULATION("int"),
-        ENEMY_SPAWNING("boolean"),
-        FLOATING_ITEM_LIFETIME_SECS("int"),
-        SIMULATION_SPAWN_DELAY("int"),
-        SIMULATION_TRADING_FILLS_SHOPS("boolean"),
-        SECTOR_INACTIVE_TIMEOUT("int"),
-        SECTOR_INACTIVE_CLEANUP_TIMEOUT("int"),
-        USE_STARMADE_AUTHENTICATION("boolean"),
-        REQUIRE_STARMADE_AUTHENTICATION("boolean"),
-        PROTECTED_NAMES_BY_ACCOUNT("int"),
-        STARTING_CREDITS("int"),
-        DEFAULT_BLUEPRINT_ENEMY_USE("boolean"),
-        LOCK_FACTION_SHIPS("boolean"),
-        DEBUG_FSM_STATE("boolean"),
-        PHYSICS_SHAPE_CASTING_TUNNELING_PREVENTION("boolean"),
-        CATALOG_SLOTS_PER_PLAYER("int"),
-        UNIVERSE_DAY_IN_MS("int"),
-        FORCE_DISK_WRITE_COMPLETION("boolean"),
-        ASTEROIDS_ENABLE_DYNAMIC_PHYSICS("boolean"),
-        ENABLE_BREAK_OFF("boolean"),
-        COLLISION_DAMAGE("boolean"),
-        SKIN_ALLOW_UPLOAD("boolean"),
-        CATALOG_NAME_COLLISION_HANDLING("boolean"),
-        SECTOR_AUTOSAVE_SEC("int"),
-        PHYSICS_SLOWDOWN_THRESHOLD("int"),
-        THRUST_SPEED_LIMIT("int"),
-        MAX_CLIENTS("int"),
-        SUPER_ADMIN_PASSWORD_USE("boolean"),
-        SUPER_ADMIN_PASSWORD("string"),
-        SERVER_LISTEN_IP("string"),
-        SOCKET_BUFFER_SIZE("int"),
-        PHYSICS_LINEAR_DAMPING("double"),
-        PHYSICS_ROTATIONAL_DAMPING("double"),
-        AI_DESTRUCTION_LOOT_COUNT_MULTIPLIER("double"),
-        AI_DESTRUCTION_LOOT_STACK_MULTIPLIER("double"),
-        CHEST_LOOT_COUNT_MULTIPLIER("double"),
-        CHEST_LOOT_STACK_MULTIPLIER("double"),
-        USE_WHITELIST("boolean"),
-        FILTER_CONNECTION_MESSAGES("boolean"),
-        USE_UDP("boolean"),
-        AUTO_KICK_MODIFIED_BLUEPRINT_USE("boolean"),
-        AUTO_BAN_ID_MODIFIED_BLUEPRINT_USE("boolean"),
-        AUTO_BAN_IP_MODIFIED_BLUEPRINT_USE("boolean"),
-        REMOVE_MODIFIED_BLUEPRINTS("boolean"),
-        DEBUG_SEGMENT_WRITING("boolean"),
-        TCP_NODELAY("boolean"),
-        PING_FLUSH("boolean"),
-        RECIPE_BLOCK_COST("int"),
-        SHOP_SPAWNING_PROBABILITY("double"),
-        RECIPE_REFUND_MULT("double"),
-        RECIPE_LEVEL_AMOUNT("int"),
-        DEFAULT_SPAWN_SECTOR_X("int"),
-        DEFAULT_SPAWN_SECTOR_Y("int"),
-        DEFAULT_SPAWN_SECTOR_Z("int"),
-        MODIFIED_BLUEPRINT_TOLERANCE("double"),
-        TURNING_DIMENSION_SCALE("double"),
-        DEFAULT_SPAWN_LOCALPOINT_X_1("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Y_1("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Z_1("double"),
-        DEFAULT_SPAWN_LOCALPOINT_X_2("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Y_2("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Z_2("double"),
-        DEFAULT_SPAWN_LOCALPOINT_X_3("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Y_3("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Z_3("double"),
-        DEFAULT_SPAWN_LOCALPOINT_X_4("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Y_4("double"),
-        DEFAULT_SPAWN_LOCALPOINT_Z_4("double"),
-        PLAYER_DEATH_CREDIT_PUNISHMENT("double"),
-        PLAYER_DEATH_CREDIT_DROP("boolean"),
-        PLAYER_DEATH_BLOCK_PUNISHMENT("boolean"),
-        PLAYER_DEATH_PUNISHMENT_TIME("int"),
-        PLAYER_DEATH_INVULNERABILITY_TIME("int"),
-        PLAYER_HISTORY_BACKLOG("int"),
-        PROJECTILES_ADDITIVE_VELOCITY("boolean"),
-        PROJECTILES_VELOCITY_MULTIPLIER("double"),
-        IGNORE_DOCKING_AREA("boolean"),
-        ALLOW_UPLOAD_FROM_LOCAL_BLUEPRINTS("boolean"),
-        SHOP_NPC_STARTING_CREDITS("int"),
-        SHOP_NPC_RECHARGE_CREDITS("int"),
-        AI_WEAPON_AIMING_ACCURACY("int"),
-        BROADCAST_SHIELD_PERCENTAGE("int"),
-        BROADCAST_POWER_PERCENTAGE("int"),
-        BLUEPRINT_BUY_WITH_BLOCKS("boolean"),
-        SQL_NIO_FILE_SIZE("int");
+        PROTECT_STARTING_SECTOR(ItemType.BOOL),
+        ENABLE_SIMULATION(ItemType.BOOL),
+        CONCURRENT_SIMULATION(ItemType.INTEGER),
+        ENEMY_SPAWNING(ItemType.BOOL),
+        FLOATING_ITEM_LIFETIME_SECS(ItemType.INTEGER),
+        SIMULATION_SPAWN_DELAY(ItemType.INTEGER),
+        SIMULATION_TRADING_FILLS_SHOPS(ItemType.BOOL),
+        SECTOR_INACTIVE_TIMEOUT(ItemType.INTEGER),
+        SECTOR_INACTIVE_CLEANUP_TIMEOUT(ItemType.INTEGER),
+        USE_STARMADE_AUTHENTICATION(ItemType.BOOL),
+        REQUIRE_STARMADE_AUTHENTICATION(ItemType.BOOL),
+        PROTECTED_NAMES_BY_ACCOUNT(ItemType.INTEGER),
+        STARTING_CREDITS(ItemType.INTEGER),
+        DEFAULT_BLUEPRINT_ENEMY_USE(ItemType.BOOL),
+        LOCK_FACTION_SHIPS(ItemType.BOOL),
+        DEBUG_FSM_STATE(ItemType.BOOL),
+        PHYSICS_SHAPE_CASTING_TUNNELING_PREVENTION(ItemType.BOOL),
+        CATALOG_SLOTS_PER_PLAYER(ItemType.INTEGER),
+        UNIVERSE_DAY_IN_MS(ItemType.LONG),
+        FORCE_DISK_WRITE_COMPLETION(ItemType.BOOL),
+        ASTEROIDS_ENABLE_DYNAMIC_PHYSICS(ItemType.BOOL),
+        ENABLE_BREAK_OFF(ItemType.BOOL),
+        COLLISION_DAMAGE(ItemType.BOOL),
+        SKIN_ALLOW_UPLOAD(ItemType.BOOL),
+        CATALOG_NAME_COLLISION_HANDLING(ItemType.BOOL),
+        SECTOR_AUTOSAVE_SEC(ItemType.INTEGER),
+        PHYSICS_SLOWDOWN_THRESHOLD(ItemType.INTEGER),
+        THRUST_SPEED_LIMIT(ItemType.INTEGER),
+        MAX_CLIENTS(ItemType.INTEGER),
+        SUPER_ADMIN_PASSWORD_USE(ItemType.BOOL),
+        SUPER_ADMIN_PASSWORD(ItemType.STRING),
+        SERVER_LISTEN_IP(ItemType.STRING),
+        SOCKET_BUFFER_SIZE(ItemType.INTEGER),
+        PHYSICS_LINEAR_DAMPING(ItemType.DOUBLE),
+        PHYSICS_ROTATIONAL_DAMPING(ItemType.DOUBLE),
+        AI_DESTRUCTION_LOOT_COUNT_MULTIPLIER(ItemType.DOUBLE),
+        AI_DESTRUCTION_LOOT_STACK_MULTIPLIER(ItemType.DOUBLE),
+        CHEST_LOOT_COUNT_MULTIPLIER(ItemType.DOUBLE),
+        CHEST_LOOT_STACK_MULTIPLIER(ItemType.DOUBLE),
+        USE_WHITELIST(ItemType.BOOL),
+        FILTER_CONNECTION_MESSAGES(ItemType.BOOL),
+        USE_UDP(ItemType.BOOL),
+        AUTO_KICK_MODIFIED_BLUEPRINT_USE(ItemType.BOOL),
+        AUTO_BAN_ID_MODIFIED_BLUEPRINT_USE(ItemType.BOOL),
+        AUTO_BAN_IP_MODIFIED_BLUEPRINT_USE(ItemType.BOOL),
+        REMOVE_MODIFIED_BLUEPRINTS(ItemType.BOOL),
+        DEBUG_SEGMENT_WRITING(ItemType.BOOL),
+        TCP_NODELAY(ItemType.BOOL),
+        PING_FLUSH(ItemType.BOOL),
+        RECIPE_BLOCK_COST(ItemType.INTEGER),
+        SHOP_SPAWNING_PROBABILITY(ItemType.DOUBLE),
+        RECIPE_REFUND_MULT(ItemType.DOUBLE),
+        RECIPE_LEVEL_AMOUNT(ItemType.INTEGER),
+        DEFAULT_SPAWN_SECTOR_X(ItemType.INTEGER),
+        DEFAULT_SPAWN_SECTOR_Y(ItemType.INTEGER),
+        DEFAULT_SPAWN_SECTOR_Z(ItemType.INTEGER),
+        MODIFIED_BLUEPRINT_TOLERANCE(ItemType.DOUBLE),
+        TURNING_DIMENSION_SCALE(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_X_1(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Y_1(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Z_1(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_X_2(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Y_2(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Z_2(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_X_3(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Y_3(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Z_3(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_X_4(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Y_4(ItemType.DOUBLE),
+        DEFAULT_SPAWN_LOCALPOINT_Z_4(ItemType.DOUBLE),
+        PLAYER_DEATH_CREDIT_PUNISHMENT(ItemType.DOUBLE),
+        PLAYER_DEATH_CREDIT_DROP(ItemType.BOOL),
+        PLAYER_DEATH_BLOCK_PUNISHMENT(ItemType.BOOL),
+        PLAYER_DEATH_PUNISHMENT_TIME(ItemType.INTEGER),
+        PLAYER_DEATH_INVULNERABILITY_TIME(ItemType.INTEGER),
+        PLAYER_HISTORY_BACKLOG(ItemType.INTEGER),
+        PROJECTILES_ADDITIVE_VELOCITY(ItemType.BOOL),
+        PROJECTILES_VELOCITY_MULTIPLIER(ItemType.DOUBLE),
+        IGNORE_DOCKING_AREA(ItemType.BOOL),
+        ALLOW_UPLOAD_FROM_LOCAL_BLUEPRINTS(ItemType.BOOL),
+        SHOP_NPC_STARTING_CREDITS(ItemType.INTEGER),
+        SHOP_NPC_RECHARGE_CREDITS(ItemType.INTEGER),
+        AI_WEAPON_AIMING_ACCURACY(ItemType.INTEGER),
+        BROADCAST_SHIELD_PERCENTAGE(ItemType.INTEGER),
+        BROADCAST_POWER_PERCENTAGE(ItemType.INTEGER),
+        BLUEPRINT_BUY_WITH_BLOCKS(ItemType.BOOL),
+        SQL_NIO_FILE_SIZE(ItemType.INTEGER);
 
-        private String type; // there must be a better way to do this
+        private ItemType type; // there must be a better way to do this
 
-        private ConfigItem(String type) {
+        private ConfigItem(ItemType type) {
             this.type = type;
         }
 
-        private String getType() {
+        private ItemType getType() {
             return type;
         }
 
+    }
+    
+    private enum ItemType {
+        BOOL,
+        DOUBLE,
+        INTEGER,
+        LONG,
+        STRING;
     }
 
 }

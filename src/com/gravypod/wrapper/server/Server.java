@@ -176,9 +176,29 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
         return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
     }
 
-    public void setMaxClients(int clients) {
+    public int getTrustSpeedLimit() {
 
-        serverConfig.saveInt(ServerConfig.ConfigItem.MAX_CLIENTS, clients);
+        return serverConfig.getInt(ServerConfig.ConfigItem.THRUST_SPEED_LIMIT);
+    }
+
+    public int getStartingCredits() {
+
+        return serverConfig.getInt(ServerConfig.ConfigItem.STARTING_CREDITS);
+    }
+
+    public long getUniverseDay() {
+
+        return serverConfig.getLong(ServerConfig.ConfigItem.UNIVERSE_DAY_IN_MS);
+    }
+
+    public boolean hasWhitelist() {
+
+        return serverConfig.getBoolean(ServerConfig.ConfigItem.USE_WHITELIST);
+    }
+
+    public boolean hasEnemySpawning() {
+
+        return serverConfig.getBoolean(ServerConfig.ConfigItem.ENEMY_SPAWNING);
     }
 	
 	public FileInfo getFileInfo() {
