@@ -32,6 +32,8 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	private final Config config;
 	
 	private final DataSaver dataSaver;
+
+    private final ServerConfig serverConfig;
 	
 	private final FileInfo fileInfo;
 	
@@ -68,6 +70,8 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		this.fileInfo = fileInfo;
 		
 		this.dataSaver = dataSaver;
+
+        serverConfig = new ServerConfig(this);
 		
 		final File starmadeDirectory = getStarmadeDirectory();
 		
@@ -161,6 +165,21 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 		return dataSaver;
 	}
+
+    public ServerConfig getServerConfig() {
+
+        return serverConfig;
+    }
+
+    public int getMaxClients() {
+
+        return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
+    }
+
+    public void setMaxClients(int clients) {
+
+        serverConfig.saveInt(ServerConfig.ConfigItem.MAX_CLIENTS, clients);
+    }
 	
 	public FileInfo getFileInfo() {
 	

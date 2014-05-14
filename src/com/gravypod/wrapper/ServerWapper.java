@@ -30,7 +30,7 @@ public class ServerWapper {
 			
 			@Override
 			public void run() {
-			
+			    server.getServerConfig().saveServerConfig();
 				server.getRunning().set(true);
 				while (true) {
 					while (server.getRunning().get()) {
