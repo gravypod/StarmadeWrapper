@@ -313,4 +313,9 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 		return getRunning().get();
 	}
+
+	@Override
+	public Logger getLogger() {
+		return logger;
+	}
 }
