@@ -7,7 +7,7 @@ public class LocationCommand extends Command {
 	
 	@Override
 	public void run(String username, User user, String... args) {
-	
+
 		pm(username, "You are located within sector " + user.getSector().toString());
 	}
 	

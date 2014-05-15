@@ -26,7 +26,7 @@ public class ServerConfig {
                     if (spaceIndex < 0) {
                         value = itemValue[1];
                     } else {
-                        value = itemValue[1].substring(0, itemValue[1].indexOf(" //"));
+                        value = itemValue[1].substring(0, itemValue[1].indexOf(" "));
                     }
                     values.put(ConfigItem.valueOf(item), value);
                 }

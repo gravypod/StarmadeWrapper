@@ -282,12 +282,6 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 
         consoleData.ban(user);
     }
-
-    @Override
-    public void setGodMode(String user, boolean enabled) {
-
-        consoleData.setGodMode(user, enabled);
-    }
 	
 	public ConsoleManager getConsoleData() {
 	

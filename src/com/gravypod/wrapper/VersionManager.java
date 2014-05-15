@@ -1,9 +1,12 @@
 package com.gravypod.wrapper;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
@@ -60,17 +63,49 @@ public class VersionManager {
 	}
 	
 	public void downloadUpdate(final boolean backup) throws IOException {
-	
-		final String buildURL = mirror + desanatizeFile(latestBuild());
-		final URL website = new URL(buildURL);
-		final ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-		final int fileSize = fileSizes.get(latestBuild());
-		ServerWapper.getLogger().info("Downloading the latest version of starmade. This build can be found here: " + buildURL + ". The file is expected to be " + fileSize + " bytes.");
-		final FileOutputStream fos = new FileOutputStream("starmade-latest.zip");
-		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-		fos.close();
-		rbc.close();
-		
+
+        String remotePath = mirror + desanatizeFile(latestBuild());
+        BufferedInputStream inputStream = null;
+        FileOutputStream outputStream = null;
+
+        URL url = new URL(remotePath);
+        URLConnection connection = url.openConnection();
+        int size = connection.getContentLength();
+
+        if (size < 0) {
+            ServerWapper.getLogger().info("Unable to get the latest version of StarMade!");
+        } else {
+            ServerWapper.getLogger().info("Downloading the latest version of StarMade (length: " + size + " bytes, URL: " + remotePath + ")...");
+        }
+
+        inputStream = new BufferedInputStream(url.openStream());
+        outputStream = new FileOutputStream("StarMade-latest.zip");
+
+        byte data[] = new byte[1024];
+        int count;
+        double sumCount = 0.0;
+        int percentage;
+        int lastPercentage = 0;
+
+        while ((count = inputStream.read(data, 0, 1024)) != -1) {
+            outputStream.write(data, 0, count);
+
+            sumCount += count;
+
+            percentage = (int) Math.ceil(sumCount / size * 100);
+
+            if (percentage != lastPercentage) {
+                ServerWapper.getLogger().info(percentage + "%");
+            }
+
+            lastPercentage = percentage;
+        }
+
+        if (inputStream != null)
+            inputStream.close();
+        if (outputStream != null)
+            outputStream.close();
+
 		ServerWapper.getLogger().info("Download finished. ");
 		
 		if (isInstalled() && backup) {
@@ -89,7 +124,7 @@ public class VersionManager {
 		
 		final File starmadeUpdate = new File("starmade-latest.zip");
 		
-		if (starmadeUpdate.length() != fileSize) {
+		if (starmadeUpdate.length() != size) {
 			throw new IOException("File downloaded is the incorrect size!");
 		}
 		
@@ -99,9 +134,6 @@ public class VersionManager {
 	
 	/**
 	 * Check to see if an update is needed
-	 * 
-	 * @param dir
-	 *            - The directory where starmade is installed
 	 * @return
 	 */
 	public boolean needsUpdate() {
