@@ -17,6 +17,7 @@ import com.gravypod.wrapper.monitors.ShutdownMonitor;
 import com.gravypod.wrapper.processing.MessageProcessor;
 import com.gravypod.wrapper.server.commands.HelpCommand;
 import com.gravypod.wrapper.server.commands.LocationCommand;
+import com.gravypod.wrapper.server.commands.ReloadCommand;
 import com.gravypod.wrapper.server.scripting.ScriptManager;
 
 public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
@@ -32,8 +33,8 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	private final Config config;
 	
 	private final DataSaver dataSaver;
-
-    private final ServerConfig serverConfig;
+	
+	private final ServerConfig serverConfig;
 	
 	private final FileInfo fileInfo;
 	
@@ -70,8 +71,8 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		this.fileInfo = fileInfo;
 		
 		this.dataSaver = dataSaver;
-
-        serverConfig = new ServerConfig(this);
+		
+		serverConfig = new ServerConfig(this);
 		
 		final File starmadeDirectory = getStarmadeDirectory();
 		
@@ -147,6 +148,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 		getCommandManager().registerCommand("help", new HelpCommand());
 		getCommandManager().registerCommand("location", new LocationCommand());
+		getCommandManager().registerCommand("reload", new ReloadCommand(getPluginManager()));
 		
 		scriptManager.loadScripts(getCommandManager(), new File(getDataFolder(), "scripts"));
 	}
@@ -165,41 +167,47 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 		return dataSaver;
 	}
-
-    public ServerConfig getServerConfig() {
-
-        return serverConfig;
-    }
-
-    public int getMaxClients() {
-
-        return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
-    }
-
-    public int getThrustSpeedLimit() {
-
-        return serverConfig.getInt(ServerConfig.ConfigItem.THRUST_SPEED_LIMIT);
-    }
-
-    public int getStartingCredits() {
-
-        return serverConfig.getInt(ServerConfig.ConfigItem.STARTING_CREDITS);
-    }
-
-    public long getUniverseDay() {
-
-        return serverConfig.getLong(ServerConfig.ConfigItem.UNIVERSE_DAY_IN_MS);
-    }
-
-    public boolean hasWhitelist() {
-
-        return serverConfig.getBoolean(ServerConfig.ConfigItem.USE_WHITELIST);
-    }
-
-    public boolean hasEnemySpawning() {
-
-        return serverConfig.getBoolean(ServerConfig.ConfigItem.ENEMY_SPAWNING);
-    }
+	
+	public ServerConfig getServerConfig() {
+	
+		return serverConfig;
+	}
+	
+	@Override
+	public int getMaxClients() {
+	
+		return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
+	}
+	
+	@Override
+	public int getThrustSpeedLimit() {
+	
+		return serverConfig.getInt(ServerConfig.ConfigItem.THRUST_SPEED_LIMIT);
+	}
+	
+	@Override
+	public int getStartingCredits() {
+	
+		return serverConfig.getInt(ServerConfig.ConfigItem.STARTING_CREDITS);
+	}
+	
+	@Override
+	public long getUniverseDay() {
+	
+		return serverConfig.getLong(ServerConfig.ConfigItem.UNIVERSE_DAY_IN_MS);
+	}
+	
+	@Override
+	public boolean hasWhitelist() {
+	
+		return serverConfig.getBoolean(ServerConfig.ConfigItem.USE_WHITELIST);
+	}
+	
+	@Override
+	public boolean hasEnemySpawning() {
+	
+		return serverConfig.getBoolean(ServerConfig.ConfigItem.ENEMY_SPAWNING);
+	}
 	
 	public FileInfo getFileInfo() {
 	
@@ -276,12 +284,12 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		consoleData.pm(username, message);
 		
 	}
-
-    @Override
-    public void ban(String user) {
-
-        consoleData.ban(user);
-    }
+	
+	@Override
+	public void ban(String user) {
+	
+		consoleData.ban(user);
+	}
 	
 	public ConsoleManager getConsoleData() {
 	
@@ -290,6 +298,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 	@Override
 	public void stopServer() {
+	
 		getRunning().set(false);
 		exec("/shutdown 0");
 	}
@@ -300,22 +309,25 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		getRunning().set(true);
 		exec("/shutdown 60");
 	}
-
+	
 	@Override
 	public void startServer() {
+	
 		if (!isRunning()) {
 			getRunning().set(true);
 		}
 	}
-
+	
 	@Override
 	public boolean isRunning() {
 	
 		return getRunning().get();
 	}
-
+	
 	@Override
 	public Logger getLogger() {
+	
 		return logger;
 	}
+	
 }

@@ -53,6 +53,11 @@ public class ScriptCommand extends Command implements Listener {
 		script.callFunction("&init", new Stack<Scalar>());
 	}
 	
+	public void onDisable() {
+		script.callFunction("&onDisable", new Stack<Scalar>());
+	}
+	
+	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onLogin(LoginEvent event) {
 	
