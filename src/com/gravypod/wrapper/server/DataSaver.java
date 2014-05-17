@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
@@ -45,14 +44,10 @@ public class DataSaver {
 		
 		if (!config.exists()) {
 			c = new Config();
-			c.apiKey = "a";
 			c.starmadeDirectory = "." + File.separator + "starmade" + File.separator;
 			c.launchCommand = "java -Xms512m -Xmx1024m -Xincgc -Xshare:off -jar StarMade.jar -server";
 			c.backup = true;
 			c.update = true;
-			c.donorsTpOthers = false;
-			c.adminPanelPort = 453;
-			c.adminPanelPass = UUID.randomUUID().toString();
 			try {
 				final YamlWriter writer = new YamlWriter(new FileWriter(config));
 				

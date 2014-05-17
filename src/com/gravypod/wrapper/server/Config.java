@@ -2,10 +2,6 @@ package com.gravypod.wrapper.server;
 
 public class Config {
 	
-	/**
-	 * The API key for Starmade-servers
-	 */
-	public String apiKey;
 	
 	/**
 	 * Starmade directory
@@ -26,11 +22,5 @@ public class Config {
 	 * Should we backup the server on updates?
 	 */
 	public boolean backup;
-	
-	public boolean donorsTpOthers;
-	
-	public int adminPanelPort;
-	
-	public String adminPanelPass;
 	
 }

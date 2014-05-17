@@ -12,12 +12,9 @@ public class HelpCommand extends Command {
 	private final String[] GENERIC_STRING_ARRAY = new String[0];
 	@Override
 	public void run(String username, User user, String... args) {
-		pm(username, helpMessages.toArray(GENERIC_STRING_ARRAY));
-	}
-	
-	@Override
-	public void init() {
-	
+		
+		helpMessages.clear();
+		
 		for (final Command c : getServer().getCommandManager().getCommands()) {
 			final String help = c.getHelp();
 			if (help == null) {
@@ -25,6 +22,8 @@ public class HelpCommand extends Command {
 			}
 			helpMessages.add(help);
 		}
+		
+		pm(username, helpMessages.toArray(GENERIC_STRING_ARRAY));
 	}
 	
 	@Override

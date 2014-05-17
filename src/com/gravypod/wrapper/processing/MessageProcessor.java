@@ -112,7 +112,7 @@ public class MessageProcessor extends Thread {
 	}
 	
 	private void chat(String line) {
-	
+		
 		line = line.replace(IdentifierConstants.chatMessageIdentifier, "").trim(); // Remove
 																					// the
 																					// chat
