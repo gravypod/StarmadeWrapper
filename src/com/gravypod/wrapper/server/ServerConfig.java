@@ -9,56 +9,65 @@ import java.util.Scanner;
 
 public class ServerConfig {
 	
-	private File configFile;
-	private HashMap<ConfigItem, String> values = new HashMap<ConfigItem, String>();
-	
-	protected ServerConfig(Server server) {
+	private final File configFile;
+	private final HashMap<ConfigItem, String> values = new HashMap<ConfigItem, String>();
+	private final HashMap<ConfigItem, String> comments = new HashMap<ConfigItem, String>();
+	protected ServerConfig(final Server server) {
 	
 		this.configFile = new File(server.getStarmadeDirectory(), "server.cfg");
 		if (configFile.exists() && configFile.canRead() && configFile.canWrite()) {
 			try {
-				Scanner sc = new Scanner(configFile);
+				final Scanner sc = new Scanner(configFile);
 				while (sc.hasNextLine()) {
-					String[] itemValue = sc.nextLine().split(" = ");
-					String key = itemValue[0];
-					int spaceIndex = itemValue[1].indexOf(" ");
+					final String[] itemValue = sc.nextLine().split(" = ");
+					final String key = itemValue[0];
+					final int spaceIndex = itemValue[1].indexOf(" ");
 					String value;
+					
+					String comment;
 					
 					if (spaceIndex < 0) {
 						value = itemValue[1];
+						comment = "";
 					} else {
 						value = itemValue[1].substring(0, spaceIndex);
+						comment = itemValue[1].substring(itemValue[1].indexOf(" //"));
 					}
 					
-					ConfigItem item = ConfigItem.valueOf(key);
-					
+					final ConfigItem item = ConfigItem.valueOf(key);
+					comments.put(item, comment);
 					values.put(item, value);
 				}
 				sc.close();
-			} catch (FileNotFoundException e) {
+			} catch (final FileNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	public void saveServerConfig() {
-	
+		
+		if (comments.values().isEmpty()) { // Fix the broken config
+			return;
+		}
+		
 		PrintWriter writer = null;
+		
 		try {
 			writer = new PrintWriter(configFile);
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
-		for (Entry<ConfigItem, String> entry : values.entrySet()) {
-			ConfigItem item = entry.getKey();
-			writer.println(item.name() + " = " + entry.getValue());
+		for (final Entry<ConfigItem, String> entry : values.entrySet()) {
+			final ConfigItem item = entry.getKey();
+			writer.println(item.name() + " = " + entry.getValue() + comments.get(item));
 		}
 		
 		writer.close();
 	}
 	
-	protected String getString(ConfigItem item) {
+	protected String getString(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.STRING) {
 			return values.get(item);
@@ -66,7 +75,7 @@ public class ServerConfig {
 		return null;
 	}
 	
-	protected int getInt(ConfigItem item) {
+	protected int getInt(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.INTEGER) {
 			return Integer.parseInt(values.get(item));
@@ -74,7 +83,7 @@ public class ServerConfig {
 		return 0;
 	}
 	
-	protected double getDouble(ConfigItem item) {
+	protected double getDouble(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.DOUBLE) {
 			return Double.parseDouble(values.get(item));
@@ -82,7 +91,7 @@ public class ServerConfig {
 		return 0D;
 	}
 	
-	protected boolean getBoolean(ConfigItem item) {
+	protected boolean getBoolean(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.BOOL) {
 			return Boolean.parseBoolean(values.get(item));
@@ -90,7 +99,7 @@ public class ServerConfig {
 		return false;
 	}
 	
-	protected long getLong(ConfigItem item) {
+	protected long getLong(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.LONG) {
 			return Long.parseLong(values.get(item));
@@ -98,28 +107,28 @@ public class ServerConfig {
 		return 0L;
 	}
 	
-	protected void saveString(ConfigItem item, String value) {
+	protected void saveString(final ConfigItem item, final String value) {
 	
 		values.remove(item);
 		values.put(item, value);
 		saveServerConfig();
 	}
 	
-	protected void saveInt(ConfigItem item, int value) {
+	protected void saveInt(final ConfigItem item, final int value) {
 	
 		values.remove(item);
 		values.put(item, String.valueOf(value));
 		saveServerConfig();
 	}
 	
-	protected void saveDouble(ConfigItem item, double value) {
+	protected void saveDouble(final ConfigItem item, final double value) {
 	
 		values.remove(item);
 		values.put(item, String.valueOf(value));
 		saveServerConfig();
 	}
 	
-	protected void saveBoolean(ConfigItem item, boolean value) {
+	protected void saveBoolean(final ConfigItem item, final boolean value) {
 	
 		values.remove(item);
 		values.put(item, String.valueOf(value));
@@ -216,8 +225,9 @@ public class ServerConfig {
 			SQL_NIO_FILE_SIZE(ItemType.INTEGER);
 		
 		private ItemType type;
+		private String comment;
 		
-		private ConfigItem(ItemType type) {
+		private ConfigItem(final ItemType type) {
 		
 			this.type = type;
 		}
@@ -225,6 +235,18 @@ public class ServerConfig {
 		private ItemType getType() {
 		
 			return type;
+		}
+		
+		
+		public String getComment() {
+		
+			return comment;
+		}
+		
+		
+		public void setComment(String comment) {
+		
+			this.comment = comment;
 		}
 		
 	}

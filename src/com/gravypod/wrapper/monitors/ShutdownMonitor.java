@@ -13,9 +13,10 @@ public class ShutdownMonitor extends Thread {
 	
 	@Override
 	public void run() {
+	
 		server.logoutAll();
 		server.getPluginManager().disablePlugins();
-        server.getServerConfig().saveServerConfig();
+		server.getServerConfig().saveServerConfig();
 		server.getConsoleData().kill();
 	}
 }

@@ -6,8 +6,8 @@ import com.gravypod.starmadewrapper.plugins.commands.Command;
 public class LocationCommand extends Command {
 	
 	@Override
-	public void run(String username, User user, String... args) {
-
+	public void run(final String username, final User user, final String... args) {
+	
 		pm(username, "You are located within sector " + user.getSector().toString());
 	}
 	

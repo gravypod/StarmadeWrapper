@@ -10,9 +10,10 @@ public class HelpCommand extends Command {
 	private final ArrayList<String> helpMessages = new ArrayList<String>();
 	
 	private final String[] GENERIC_STRING_ARRAY = new String[0];
+	
 	@Override
-	public void run(String username, User user, String... args) {
-		
+	public void run(final String username, final User user, final String... args) {
+	
 		helpMessages.clear();
 		
 		for (final Command c : getServer().getCommandManager().getCommands()) {

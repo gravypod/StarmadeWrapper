@@ -18,7 +18,6 @@ import com.gravypod.wrapper.processing.MessageProcessor;
 import com.gravypod.wrapper.server.commands.HelpCommand;
 import com.gravypod.wrapper.server.commands.LocationCommand;
 import com.gravypod.wrapper.server.commands.ReloadCommand;
-import com.gravypod.wrapper.server.scripting.ScriptManager;
 
 public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
@@ -43,8 +42,6 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	private final MessageProcessor messageProcessor = new MessageProcessor(this, messages);
 	
 	private final ConsoleManager consoleData;
-	
-	private final ScriptManager scriptManager = new ScriptManager(this);
 	
 	private final CommandManager commandManager = new CommandManager(this);
 	
@@ -117,6 +114,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		
 	}
 	
+	@Override
 	public synchronized User getUser(final String name) {
 	
 		if (!users.containsKey(name)) {
@@ -150,7 +148,6 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		getCommandManager().registerCommand("location", new LocationCommand());
 		getCommandManager().registerCommand("reload", new ReloadCommand(getPluginManager()));
 		
-		scriptManager.loadScripts(getCommandManager(), new File(getDataFolder(), "scripts"));
 	}
 	
 	public Config getConfig() {
@@ -224,6 +221,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		return running;
 	}
 	
+	@Override
 	public CommandManager getCommandManager() {
 	
 		return commandManager;
@@ -247,46 +245,46 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	}
 	
 	@Override
-	public void exec(String command) {
+	public void exec(final String command) {
 	
 		consoleData.exec(command);
 	}
 	
 	@Override
-	public void tp(String username, int x, int y, int z) {
+	public void tp(final String username, final int x, final int y, final int z) {
 	
 		consoleData.tp(username, x, y, z);
 	}
 	
 	@Override
-	public void tp(String username, String x, String y, String z) {
+	public void tp(final String username, final String x, final String y, final String z) {
 	
 		consoleData.tp(username, x, y, z);
 	}
 	
 	@Override
-	public void pm(String user, String... message) {
+	public void pm(final String user, final String... message) {
 	
 		consoleData.pm(user, message);
 		
 	}
 	
 	@Override
-	public void give(String user, int item, int amount) {
+	public void give(final String user, final int item, final int amount) {
 	
 		consoleData.give(user, item, amount);
 		
 	}
 	
 	@Override
-	public void pm(String username, String message) {
+	public void pm(final String username, final String message) {
 	
 		consoleData.pm(username, message);
 		
 	}
 	
 	@Override
-	public void ban(String user) {
+	public void ban(final String user) {
 	
 		consoleData.ban(user);
 	}
@@ -304,7 +302,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	}
 	
 	@Override
-	public void restart(int time) {
+	public void restart(final int time) {
 	
 		getRunning().set(true);
 		exec("/shutdown 60");

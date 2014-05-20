@@ -24,7 +24,7 @@ public class ConsoleManager implements Runnable {
 	private final File starmadeDir;
 	private final Config config;
 	
-	public ConsoleManager(Config config, File starmadeDir, BlockingQueue<String> messages) {
+	public ConsoleManager(final Config config, final File starmadeDir, final BlockingQueue<String> messages) {
 	
 		this.messages = messages;
 		this.config = config;
@@ -37,7 +37,7 @@ public class ConsoleManager implements Runnable {
 	
 		try {
 			starmade.set(builder.start());
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
 		
@@ -111,16 +111,16 @@ public class ConsoleManager implements Runnable {
 	
 		exec("/giveid " + user + " " + item + " " + amount);
 	}
-
-    public synchronized void ban(final String user) {
-
-        exec("/ban_name " + user);
-    }
-
-    public synchronized void setGodMode(final String user, final boolean enabled) {
-
-        exec("/god_mode " + user + " " + enabled);
-    }
+	
+	public synchronized void ban(final String user) {
+	
+		exec("/ban_name " + user);
+	}
+	
+	public synchronized void setGodMode(final String user, final boolean enabled) {
+	
+		exec("/god_mode " + user + " " + enabled);
+	}
 	
 	public synchronized PrintWriter getWriter() {
 	

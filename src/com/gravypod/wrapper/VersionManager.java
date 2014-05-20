@@ -60,49 +60,51 @@ public class VersionManager {
 	}
 	
 	public void downloadUpdate(final boolean backup) throws IOException {
-
-        String remotePath = mirror + desanatizeFile(latestBuild());
-        BufferedInputStream inputStream = null;
-        FileOutputStream outputStream = null;
-
-        URL url = new URL(remotePath);
-        URLConnection connection = url.openConnection();
-        int size = connection.getContentLength();
-
-        if (size < 0) {
-            ServerWapper.getLogger().info("Unable to get the latest version of StarMade!");
-        } else {
-            ServerWapper.getLogger().info("Downloading the latest version of StarMade (length: " + size + " bytes, URL: " + remotePath + ")...");
-        }
-
-        inputStream = new BufferedInputStream(url.openStream());
-        outputStream = new FileOutputStream("StarMade-latest.zip");
-
-        byte data[] = new byte[1024];
-        int count;
-        double sumCount = 0.0;
-        int percentage;
-        int lastPercentage = 0;
-
-        while ((count = inputStream.read(data, 0, 1024)) != -1) {
-            outputStream.write(data, 0, count);
-
-            sumCount += count;
-
-            percentage = (int) Math.ceil(sumCount / size * 100);
-
-            if (percentage != lastPercentage) {
-                ServerWapper.getLogger().info(percentage + "%");
-            }
-
-            lastPercentage = percentage;
-        }
-
-        if (inputStream != null)
-            inputStream.close();
-        if (outputStream != null)
-            outputStream.close();
-
+	
+		final String remotePath = mirror + desanatizeFile(latestBuild());
+		BufferedInputStream inputStream = null;
+		FileOutputStream outputStream = null;
+		
+		final URL url = new URL(remotePath);
+		final URLConnection connection = url.openConnection();
+		final int size = connection.getContentLength();
+		
+		if (size < 0) {
+			ServerWapper.getLogger().info("Unable to get the latest version of StarMade!");
+		} else {
+			ServerWapper.getLogger().info("Downloading the latest version of StarMade (length: " + size + " bytes, URL: " + remotePath + ")...");
+		}
+		
+		inputStream = new BufferedInputStream(url.openStream());
+		outputStream = new FileOutputStream("StarMade-latest.zip");
+		
+		final byte data[] = new byte[1024];
+		int count;
+		double sumCount = 0.0;
+		int percentage;
+		int lastPercentage = 0;
+		
+		while ((count = inputStream.read(data, 0, 1024)) != -1) {
+			outputStream.write(data, 0, count);
+			
+			sumCount += count;
+			
+			percentage = (int) Math.ceil(sumCount / size * 100);
+			
+			if (percentage != lastPercentage) {
+				ServerWapper.getLogger().info(percentage + "%");
+			}
+			
+			lastPercentage = percentage;
+		}
+		
+		if (inputStream != null) {
+			inputStream.close();
+		}
+		if (outputStream != null) {
+			outputStream.close();
+		}
+		
 		ServerWapper.getLogger().info("Download finished. ");
 		
 		if (isInstalled() && backup) {
@@ -131,6 +133,7 @@ public class VersionManager {
 	
 	/**
 	 * Check to see if an update is needed
+	 * 
 	 * @return
 	 */
 	public boolean needsUpdate() {

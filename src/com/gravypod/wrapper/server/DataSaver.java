@@ -22,7 +22,8 @@ public class DataSaver {
 	private final File userDataFolder, config;
 	
 	/**
-	 * Create a {@link DataSaver} that will load and save data to <code>directory</code>
+	 * Create a {@link DataSaver} that will load and save data to
+	 * <code>directory</code>
 	 * 
 	 * @param directory
 	 */
@@ -88,6 +89,7 @@ public class DataSaver {
 	}
 	
 	public User load(final String name) {
+	
 		if (!exists(name)) {
 			return defaultUser(name);
 		}

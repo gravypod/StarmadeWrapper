@@ -26,13 +26,6 @@ How to start:
 	4. Stop the server, edit the configs to your liking.
 	5. Redo step number 2 to start the server again.
 	
-How to use scripts:
-	1. Learn how to use the scripting API
-		A. Learn how to use Sleep from http://sleep.dashnine.org/manual/
-		B. Download and read all of the information within this script: http://gravypod.com/smw/test.sl
-	2. Create a file in the scripts directory named the same thing you would like the command to be and an extension of ".sl" (e.x. If you would like to create a ("!test" command, create a file called "test.sl")
-	3. Restart the server, or run the "!reload" command in game, so that the wrapper loads your newly created script
-	
 How to write plugins:
 	1. Download the latest plugins and extract contents of SMW-Plugins
 	2. Add StarmadeWrapper-API.jar to the libs of your plugin
@@ -51,7 +44,6 @@ Requirements:
 	1. Java 7
 	
 Libraries used & packaged within the jar:
-	1. Sleep ( http://sleep.dashnine.org/ )
-	2. YamlBeans ( https://github.com/EsotericSoftware/yamlbeans/ )
-	3. Json-Simple ( https://code.google.com/p/json-simple/ )
+	1. YamlBeans ( https://github.com/EsotericSoftware/yamlbeans/ )
+	2. Json-Simple ( https://code.google.com/p/json-simple/ )
 	

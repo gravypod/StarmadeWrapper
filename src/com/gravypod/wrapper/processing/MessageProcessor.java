@@ -69,7 +69,7 @@ public class MessageProcessor extends Thread {
 		
 		final String username = newMessage.substring(0, firstString).trim();
 		
-		Event e = Events.fireEvent(new LoginEvent(username));
+		final Event e = Events.fireEvent(new LoginEvent(username));
 		
 		if (e.isCancelled()) {
 			server.exec("/kick " + username);
@@ -112,7 +112,7 @@ public class MessageProcessor extends Thread {
 	}
 	
 	private void chat(String line) {
-		
+	
 		line = line.replace(IdentifierConstants.chatMessageIdentifier, "").trim(); // Remove
 																					// the
 																					// chat
@@ -129,7 +129,7 @@ public class MessageProcessor extends Thread {
 																		// after
 																		// colon
 		
-		Event event = Events.fireEvent(new ChatEvent(user, message));
+		final Event event = Events.fireEvent(new ChatEvent(user, message));
 		if (event.isCancelled()) {
 			return;
 		}

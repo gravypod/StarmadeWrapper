@@ -60,6 +60,7 @@ public class User implements com.gravypod.starmadewrapper.User {
 		factions.remove(item);
 	}
 	
+	@Override
 	public synchronized List<String> getFactions() {
 	
 		return Collections.unmodifiableList(factions);
@@ -79,19 +80,19 @@ public class User implements com.gravypod.starmadewrapper.User {
 	
 		return name;
 	}
-
+	
 	@Override
 	public String getUsername() {
 	
 		return getName();
 	}
-
+	
 	@Override
 	public Sector getSector() {
 	
 		return new Sector(x, y, z);
 	}
-
+	
 	@Override
 	public String getFactionOwned() {
 	

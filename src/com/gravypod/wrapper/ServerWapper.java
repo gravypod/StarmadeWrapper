@@ -12,7 +12,7 @@ public class ServerWapper {
 	
 	private static final Logger logger = Logger.getLogger(ServerWapper.class.getName());
 	
-	private static Thread serverThread;
+	private static StarmadeServerThread serverThread;
 	
 	public static void main(final String[] args) {
 	
@@ -25,28 +25,9 @@ public class ServerWapper {
 		final ConsoleMonitor consoleMonitor = new ConsoleMonitor(server);
 		consoleMonitor.start();
 		
+		serverThread = new StarmadeServerThread(server);
 		
-		serverThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-			    server.getServerConfig().saveServerConfig();
-				server.getRunning().set(true);
-				while (true) {
-					while (server.getRunning().get()) {
-						ServerWapper.getLogger().info("Starting server");
-						server.run();
-					}
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		
-		getServerThread().start();
+		ServerWapper.getServerThread().start();
 		
 	}
 	
@@ -56,7 +37,6 @@ public class ServerWapper {
 			
 			final FileHandler logHandler = new FileHandler("wrapper.log");
 			final SimpleFormatter formatter = new SimpleFormatter();
-			
 			logHandler.setFormatter(formatter);
 			ServerWapper.getLogger().addHandler(logHandler);
 			
@@ -70,7 +50,9 @@ public class ServerWapper {
 		}
 	}
 	
-	private static File getDirectory() { // Get directory we want to use (This will be used later for multi server hosting)
+	private static File getDirectory() { // Get directory we want to use (This
+											// will be used later for multi
+											// server hosting)
 	
 		final File directory = new File("./");
 		if (!directory.exists() || !directory.isDirectory()) {
@@ -86,7 +68,7 @@ public class ServerWapper {
 	
 	public static Thread getServerThread() {
 	
-		return serverThread;
+		return ServerWapper.serverThread;
 	}
 	
 }
