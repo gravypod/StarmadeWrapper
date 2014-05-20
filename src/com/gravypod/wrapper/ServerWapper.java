@@ -2,8 +2,8 @@ package com.gravypod.wrapper;
 
 import java.io.File;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import com.gravypod.wrapper.monitors.ConsoleMonitor;
 import com.gravypod.wrapper.server.Server;
@@ -36,9 +36,13 @@ public class ServerWapper {
 		try {
 			
 			final FileHandler logHandler = new FileHandler("wrapper.log");
-			final SimpleFormatter formatter = new SimpleFormatter();
-			logHandler.setFormatter(formatter);
+			logHandler.setFormatter(new LogFormatter());
+			
 			ServerWapper.getLogger().addHandler(logHandler);
+			
+			for (Handler h : logger.getHandlers()) {
+				h.setFormatter(new LogFormatter());
+			}
 			
 		} catch (final Exception e) {
 			

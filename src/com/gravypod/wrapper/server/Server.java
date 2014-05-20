@@ -1,6 +1,7 @@
 package com.gravypod.wrapper.server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +9,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.gravypod.starmadewrapper.Material;
 import com.gravypod.starmadewrapper.plugins.PluginManager;
 import com.gravypod.starmadewrapper.plugins.commands.CommandManager;
 import com.gravypod.wrapper.VersionManager;
@@ -90,7 +93,15 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 	@Override
 	public void run() {
-	
+		
+		try {
+			Material.load(new File(getStarmadeDirectory(), "data" + File.separator + "config" + File.separator + "BlockTypes.properties"));
+		} catch (FileNotFoundException e) {
+			logger.log(Level.SEVERE, "Could not find starmade's BlockTypes.properties. No block data will be usabel by plugins", e);
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Could not read BlockTypes.properties. No block data will be usabel by plugins", e);
+		}
+		
 		registerCommands();
 		pluginManager.loadPlugins();
 		consoleData.run();

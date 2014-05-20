@@ -3,8 +3,6 @@ package com.gravypod.wrapper;
 import com.gravypod.wrapper.server.Server;
 
 
-
-
 public class StarmadeServerThread extends Thread {
 	
 	private final Server server;
@@ -15,11 +13,12 @@ public class StarmadeServerThread extends Thread {
 	@Override
 	public void run() {
 
-		server.getServerConfig().saveServerConfig();
+		
 		server.getRunning().set(true);
 		while (true) {
 			while (server.getRunning().get()) {
 				ServerWapper.getLogger().info("Starting server");
+				server.getServerConfig().saveServerConfig();
 				server.run();
 			}
 			try {
