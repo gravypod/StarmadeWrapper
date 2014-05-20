@@ -24,18 +24,16 @@ public class ServerConfig {
 					final int spaceIndex = itemValue[1].indexOf(" ");
 					String value;
 					
-					String comment;
+					final ConfigItem item = ConfigItem.valueOf(key);
 					
 					if (spaceIndex < 0) {
 						value = itemValue[1];
-						comment = "";
 					} else {
 						value = itemValue[1].substring(0, spaceIndex);
-						comment = itemValue[1].substring(itemValue[1].indexOf(" //"));
+						comments.put(item, itemValue[1].substring(itemValue[1].indexOf(" //")));
 					}
 					
-					final ConfigItem item = ConfigItem.valueOf(key);
-					comments.put(item, comment);
+					
 					values.put(item, value);
 				}
 				sc.close();
