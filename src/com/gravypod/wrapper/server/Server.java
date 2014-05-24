@@ -58,7 +58,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 			dataFolder.mkdirs();// TODO: Check if it worked
 		}
 		
-		final DataSaver dataSaver = new DataSaver(directory);
+		final DataSaver dataSaver = new DataSaver(logger, directory);
 		
 		addShutdownHooks();
 		
