@@ -8,17 +8,17 @@ import java.util.logging.Logger;
 import com.gravypod.wrapper.monitors.ConsoleMonitor;
 import com.gravypod.wrapper.server.Server;
 
-public class ServerWapper {
+public class ServerWrapper {
 	
-	private static final Logger logger = Logger.getLogger(ServerWapper.class.getName());
+	private static final Logger logger = Logger.getLogger(ServerWrapper.class.getName());
 	
 	private static StarmadeServerThread serverThread;
 	
 	public static void main(final String[] args) {
 	
-		ServerWapper.addLogHandler();
+		ServerWrapper.addLogHandler();
 		
-		final File directory = ServerWapper.getDirectory();
+		final File directory = ServerWrapper.getDirectory();
 		
 		final Server server = new Server(directory);
 		
@@ -27,7 +27,7 @@ public class ServerWapper {
 		
 		serverThread = new StarmadeServerThread(server);
 		
-		ServerWapper.getServerThread().start();
+		ServerWrapper.getServerThread().start();
 		
 	}
 	
@@ -38,7 +38,7 @@ public class ServerWapper {
 			final FileHandler logHandler = new FileHandler("wrapper.log");
 			logHandler.setFormatter(new LogFormatter());
 			
-			ServerWapper.getLogger().addHandler(logHandler);
+			ServerWrapper.getLogger().addHandler(logHandler);
 			
 			for (Handler h : logger.getHandlers()) {
 				h.setFormatter(new LogFormatter());
@@ -67,12 +67,12 @@ public class ServerWapper {
 	
 	public static Logger getLogger() {
 	
-		return ServerWapper.logger;
+		return ServerWrapper.logger;
 	}
 	
 	public static Thread getServerThread() {
 	
-		return ServerWapper.serverThread;
+		return ServerWrapper.serverThread;
 	}
 	
 }

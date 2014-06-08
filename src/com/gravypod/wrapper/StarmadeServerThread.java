@@ -17,7 +17,7 @@ public class StarmadeServerThread extends Thread {
 		server.getRunning().set(true);
 		while (true) {
 			while (server.getRunning().get()) {
-				ServerWapper.getLogger().info("Starting server");
+				ServerWrapper.getLogger().info("Starting server");
 				server.getServerConfig().saveServerConfig();
 				server.run();
 			}

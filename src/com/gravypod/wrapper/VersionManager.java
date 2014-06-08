@@ -70,9 +70,9 @@ public class VersionManager {
 		final int size = connection.getContentLength();
 		
 		if (size < 0) {
-			ServerWapper.getLogger().info("Unable to get the latest version of StarMade!");
+			ServerWrapper.getLogger().info("Unable to get the latest version of StarMade!");
 		} else {
-			ServerWapper.getLogger().info("Downloading the latest version of StarMade (length: " + size + " bytes, URL: " + remotePath + ")...");
+			ServerWrapper.getLogger().info("Downloading the latest version of StarMade (length: " + size + " bytes, URL: " + remotePath + ")...");
 		}
 		
 		inputStream = new BufferedInputStream(url.openStream());
@@ -92,7 +92,7 @@ public class VersionManager {
 			percentage = (int) Math.ceil(sumCount / size * 100);
 			
 			if (percentage != lastPercentage) {
-				ServerWapper.getLogger().info(percentage + "%");
+				ServerWrapper.getLogger().info(percentage + "%");
 			}
 			
 			lastPercentage = percentage;
@@ -105,10 +105,10 @@ public class VersionManager {
 			outputStream.close();
 		}
 		
-		ServerWapper.getLogger().info("Download finished. ");
+		ServerWrapper.getLogger().info("Download finished. ");
 		
 		if (isInstalled() && backup) {
-			ServerWapper.getLogger().info("Backing up server.");
+			ServerWrapper.getLogger().info("Backing up server.");
 			final File f = new File(new SimpleDateFormat("'backup-'MM-dd hh-mm-ss-SS'.zip'").format(new Date()));
 			if (!f.exists()) {
 				f.createNewFile();
@@ -119,7 +119,7 @@ public class VersionManager {
 		if (!starmadeDirectory.exists()) {
 			starmadeDirectory.mkdirs();
 		}
-		ServerWapper.getLogger().info("Installing update.");
+		ServerWrapper.getLogger().info("Installing update.");
 		
 		final File starmadeUpdate = new File("starmade-latest.zip");
 		
@@ -128,7 +128,7 @@ public class VersionManager {
 		}
 		
 		ZipUtils.extract(starmadeUpdate, starmadeDirectory);
-		ServerWapper.getLogger().info("Update has finished.");
+		ServerWrapper.getLogger().info("Update has finished.");
 	}
 	
 	/**

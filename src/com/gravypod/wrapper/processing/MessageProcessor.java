@@ -8,7 +8,7 @@ import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
 import com.gravypod.wrapper.LocationUtils;
-import com.gravypod.wrapper.ServerWapper;
+import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
 
 public class MessageProcessor extends Thread {
@@ -54,7 +54,7 @@ public class MessageProcessor extends Thread {
 			}
 			
 		}
-		ServerWapper.getLogger().info("Closing out of " + getClass().getName());
+		ServerWrapper.getLogger().info("Closing out of " + getClass().getName());
 	}
 	
 	private void login(final String line) {
@@ -88,7 +88,7 @@ public class MessageProcessor extends Thread {
 			final int z = Integer.parseInt(location[2]);
 			if (server.logoutUser(user, x, y, z)) {
 				Events.fireEvent(new LogoutEvent(user));
-				ServerWapper.getLogger().info("Logging " + user + " out. He is in sector " + x + ", " + y + ", " + z);
+				ServerWrapper.getLogger().info("Logging " + user + " out. He is in sector " + x + ", " + y + ", " + z);
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();

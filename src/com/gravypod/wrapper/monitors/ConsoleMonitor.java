@@ -2,7 +2,7 @@ package com.gravypod.wrapper.monitors;
 
 import java.util.Scanner;
 
-import com.gravypod.wrapper.ServerWapper;
+import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
 
 public class ConsoleMonitor extends Thread {
@@ -39,7 +39,7 @@ public class ConsoleMonitor extends Thread {
 		
 		sc.close();
 		
-		ServerWapper.getLogger().info("Closing out of " + getClass().getName());
+		ServerWrapper.getLogger().info("Closing out of " + getClass().getName());
 		
 	}
 	
