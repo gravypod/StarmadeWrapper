@@ -2,11 +2,13 @@ package com.gravypod.wrapper.processing;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.starmadewrapper.plugins.events.Event;
 import com.gravypod.starmadewrapper.plugins.events.Events;
 import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.SectorChangeEvent;
 import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
@@ -81,14 +83,11 @@ public class MessageProcessor extends Thread {
 	
 		line = line.replace(IdentifierConstants.logoutMessageIdentifier, "");
 		final String user = line.substring(0, line.indexOf(' '));
-		final String[] location = LocationUtils.extractLocationString(line);
+		final Sector location = LocationUtils.sectorFromString(line);
 		try {
-			final int x = Integer.parseInt(location[0]);
-			final int y = Integer.parseInt(location[1]);
-			final int z = Integer.parseInt(location[2]);
-			if (server.logoutUser(user, x, y, z)) {
+			if (server.logoutUser(user, location.getX(), location.getY(), location.getZ())) {
 				Events.fireEvent(new LogoutEvent(user));
-				ServerWrapper.getLogger().info("Logging " + user + " out. He is in sector " + x + ", " + y + ", " + z);
+				ServerWrapper.getLogger().info("Logging " + user + " out. He is in sector (" + location.getX() + ", " + location.getY() + ", " + location.getZ() + ")");
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -101,13 +100,17 @@ public class MessageProcessor extends Thread {
 		final int playerCharLoc = line.indexOf(IdentifierConstants.playerCharacterID);
 		final int playerCharEnd = playerCharLoc + IdentifierConstants.playerCharacterID.length();
 		final String player = line.substring(playerCharEnd, line.indexOf(')', playerCharEnd));
-		final String[] coords = LocationUtils.extractLocationString(line);
-		
-		final int x = Integer.parseInt(coords[0].trim());
-		final int y = Integer.parseInt(coords[1].trim());
-		final int z = Integer.parseInt(coords[2].trim());
-		
-		server.getUser(player).setLocation(x, y, z);
+		final Sector from = LocationUtils.sectorsFromString(line)[0];
+        final Sector to = LocationUtils.sectorsFromString(line)[1];
+
+        final Event event = Events.fireEvent(new SectorChangeEvent(player, from, to));
+
+        if (event.isCancelled()) {
+            server.getUser(player).setLocation(from);
+            return;
+        }
+
+		server.getUser(player).setLocation(to);
 		
 	}
 	

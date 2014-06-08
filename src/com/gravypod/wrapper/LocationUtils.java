@@ -1,5 +1,10 @@
 package com.gravypod.wrapper;
 
+import com.gravypod.starmadewrapper.Sector;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocationUtils {
 	
 	/**
@@ -17,18 +22,45 @@ public class LocationUtils {
 	
 		return x + " " + y + " " + z;
 	}
-	
-	/**
-	 * Extract a location from a string
-	 * 
-	 * @param line
-	 *            - Line to extract data from
-	 * @return - X, Y, Z locations as strings
-	 */
-	public static String[] extractLocationString(final String line) {
-	
-		return line.substring(line.lastIndexOf('(') + 1, line.lastIndexOf(')')).split(", ");
-		
-	}
+
+    /**
+     * Parse a Sector from String.
+     *
+     * @param line from the logger
+     * @return sector parsed
+     */
+    public static Sector sectorFromString(final String line) {
+
+        String sector = line.substring(line.indexOf("SECTOR", 0), line.lastIndexOf(")") + 1);
+        String[] coords = sector.substring(sector.indexOf("(") + 1, sector.indexOf(")")).split(", ");
+
+        int x = Integer.parseInt(coords[0]);
+        int y = Integer.parseInt(coords[1]);
+        int z = Integer.parseInt(coords[2]);
+
+        return new Sector(x, y, z);
+    }
+
+    /**
+     * Parse a array of Sectors for sector changing.
+     *
+     * @param line from the logger
+     * @return array of sectors parsed
+     */
+	public static Sector[] sectorsFromString(final String line) {
+
+        List<Sector> sectorList = new ArrayList<Sector>();
+        String[] sectors = line.substring(line.indexOf("Sector[", 0), line.lastIndexOf(")") + 1).split(" -> ");
+
+        for (String sector : sectors) {
+            String[] coords = sector.substring(sector.indexOf("(") + 1, sector.indexOf(")")).split(", ");
+            int x = Integer.parseInt(coords[0]);
+            int y = Integer.parseInt(coords[1]);
+            int z = Integer.parseInt(coords[2]);
+            sectorList.add(new Sector(x, y ,z));
+        }
+
+        return sectorList.toArray(new Sector[sectorList.size()]);
+    }
 	
 }

@@ -24,6 +24,13 @@ public class User implements com.gravypod.starmadewrapper.User {
 		this.y = y;
 		this.z = z;
 	}
+
+    public void setLocation(final Sector sector) {
+
+        this.x = sector.getX();
+        this.y = sector.getY();
+        this.z = sector.getZ();
+    }
 	
 	public int getX() {
 	
