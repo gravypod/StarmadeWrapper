@@ -121,6 +121,20 @@ public class ConsoleManager implements Runnable {
 	
 		exec("/god_mode " + user + " " + enabled);
 	}
+
+    public synchronized void setWhitelist(final boolean whitelist) {
+
+        exec("/whitelist_activate " + whitelist);
+    }
+
+    public synchronized void whitelist(final String username, boolean auth) {
+
+        if (auth) {
+            exec("/whitelist_account " + username);
+        } else {
+            exec("/whitelist_name " + username);
+        }
+    }
 	
 	public synchronized PrintWriter getWriter() {
 	
