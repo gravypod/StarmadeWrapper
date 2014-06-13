@@ -4,51 +4,55 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 public class ServerConfig {
 	
 	private final File configFile;
-	private final HashMap<ConfigItem, String> values = new HashMap<ConfigItem, String>();
-	private final HashMap<ConfigItem, String> comments = new HashMap<ConfigItem, String>();
+	private final HashMap<String, ConfigEntry> values = new HashMap<String, ConfigEntry>();
+	
 	protected ServerConfig(final Server server) {
 	
 		this.configFile = new File(server.getStarmadeDirectory(), "server.cfg");
+		reloadConfig();
+	}
+	
+	public void reloadConfig() {
+	
 		if (configFile.exists() && configFile.canRead() && configFile.canWrite()) {
 			try {
 				final Scanner sc = new Scanner(configFile);
 				while (sc.hasNextLine()) {
 					final String[] itemValue = sc.nextLine().split(" = ");
+					if (itemValue.length != 2) {
+						continue;
+					}
 					final String key = itemValue[0];
 					final int spaceIndex = itemValue[1].indexOf(" ");
-					String value;
-					
-					final ConfigItem item = ConfigItem.valueOf(key);
+					String value, comment;
 					
 					if (spaceIndex < 0) {
 						value = itemValue[1];
+						comment = null;
 					} else {
 						value = itemValue[1].substring(0, spaceIndex);
-						comments.put(item, itemValue[1].substring(itemValue[1].indexOf(" //")));
+						comment = itemValue[1].substring(itemValue[1].indexOf(" //"));
 					}
 					
+					final ConfigEntry entry = new ConfigEntry(key, value, comment);
 					
-					values.put(item, value);
+					values.put(key, entry);
 				}
 				sc.close();
 			} catch (final FileNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
+		
 	}
 	
-	public void saveServerConfig() {
-		
-		if (comments.values().isEmpty()) { // Fix the broken config
-			return;
-		}
-		
+	private void saveServerConfig() {
+	
 		PrintWriter writer = null;
 		
 		try {
@@ -57,9 +61,8 @@ public class ServerConfig {
 			e.printStackTrace();
 		}
 		
-		for (final Entry<ConfigItem, String> entry : values.entrySet()) {
-			final ConfigItem item = entry.getKey();
-			writer.println(item.name() + " = " + entry.getValue() + comments.get(item));
+		for (final ConfigEntry entry : values.values()) {
+			writer.println(entry.toString());
 		}
 		
 		writer.close();
@@ -68,7 +71,7 @@ public class ServerConfig {
 	protected String getString(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.STRING) {
-			return values.get(item);
+			return getValue(item);
 		}
 		return null;
 	}
@@ -76,7 +79,7 @@ public class ServerConfig {
 	protected int getInt(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.INTEGER) {
-			return Integer.parseInt(values.get(item));
+			return Integer.parseInt(getValue(item));
 		}
 		return 0;
 	}
@@ -84,7 +87,7 @@ public class ServerConfig {
 	protected double getDouble(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.DOUBLE) {
-			return Double.parseDouble(values.get(item));
+			return Double.parseDouble(getValue(item));
 		}
 		return 0D;
 	}
@@ -92,7 +95,7 @@ public class ServerConfig {
 	protected boolean getBoolean(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.BOOL) {
-			return Boolean.parseBoolean(values.get(item));
+			return Boolean.parseBoolean(getValue(item));
 		}
 		return false;
 	}
@@ -100,41 +103,68 @@ public class ServerConfig {
 	protected long getLong(final ConfigItem item) {
 	
 		if (item.getType() == ItemType.LONG) {
-			return Long.parseLong(values.get(item));
+			return Long.parseLong(getValue(item));
 		}
 		return 0L;
 	}
 	
+	private String getValue(ConfigItem item) {
+	
+		return getValue(item.name());
+		
+	}
+	
+	private String getValue(String key) {
+	
+		return values.get(key).getValue();
+	}
+	
 	protected void saveString(final ConfigItem item, final String value) {
 	
-		values.remove(item);
-		values.put(item, value);
+		if (!values.containsKey(item.name())) {
+			return;
+		}
+		
+		values.get(item.name()).setValue(value);
 		saveServerConfig();
 	}
 	
 	protected void saveInt(final ConfigItem item, final int value) {
 	
-		values.remove(item);
-		values.put(item, String.valueOf(value));
+		if (!values.containsKey(item.name())) {
+			return;
+		}
+		
+		values.get(item.name()).setValue(value);
 		saveServerConfig();
 	}
 	
 	protected void saveDouble(final ConfigItem item, final double value) {
 	
-		values.remove(item);
-		values.put(item, String.valueOf(value));
+		if (!values.containsKey(item.name())) {
+			return;
+		}
+		
+		values.get(item.name()).setValue(value);
 		saveServerConfig();
 	}
 	
 	protected void saveBoolean(final ConfigItem item, final boolean value) {
 	
-		values.remove(item);
-		values.put(item, String.valueOf(value));
+		if (!values.containsKey(item.name())) {
+			return;
+		}
+		
+		values.get(item.name()).setValue(value);
 		saveServerConfig();
 	}
 	
 	protected enum ConfigItem {
 		PROTECT_STARTING_SECTOR(ItemType.BOOL),
+			SECTOR_SIZE(ItemType.INTEGER),
+			PLANET_SIZE_DEVIATION(ItemType.DOUBLE),
+			PLANET_SIZE_MEAN(ItemType.DOUBLE),
+			ADMINS_CIRCUMVENT_STRUCTURE_CONTROL(ItemType.BOOL),
 			ENABLE_SIMULATION(ItemType.BOOL),
 			CONCURRENT_SIMULATION(ItemType.INTEGER),
 			ENEMY_SPAWNING(ItemType.BOOL),
@@ -223,7 +253,6 @@ public class ServerConfig {
 			SQL_NIO_FILE_SIZE(ItemType.INTEGER);
 		
 		private ItemType type;
-		private String comment;
 		
 		private ConfigItem(final ItemType type) {
 		
@@ -233,18 +262,6 @@ public class ServerConfig {
 		private ItemType getType() {
 		
 			return type;
-		}
-		
-		
-		public String getComment() {
-		
-			return comment;
-		}
-		
-		
-		public void setComment(String comment) {
-		
-			this.comment = comment;
 		}
 		
 	}

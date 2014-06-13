@@ -16,7 +16,6 @@ public class ShutdownMonitor extends Thread {
 	
 		server.logoutAll();
 		server.getPluginManager().disablePlugins();
-		server.getServerConfig().saveServerConfig();
 		server.getConsoleData().kill();
 	}
 }

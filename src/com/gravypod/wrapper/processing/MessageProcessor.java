@@ -36,8 +36,9 @@ public class MessageProcessor extends Thread {
 			try {
 				
 				final String line = messages.take();
-				
-				if (line.startsWith(IdentifierConstants.loginIdentifier)) {
+				if (line.startsWith(IdentifierConstants.fullyStarted)) {
+					server.getServerConfig().reloadConfig(); // Reload Config once StarMade has updated it for use.
+				} else if (line.startsWith(IdentifierConstants.loginIdentifier)) {
 					login(line);
 					continue;
 				} else if (line.contains(IdentifierConstants.movementIdentifier)) {

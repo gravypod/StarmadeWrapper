@@ -11,4 +11,6 @@ public class IdentifierConstants {
 	public static final String movementIdentifier = "Doing Sector Change for PlayerCharacter";
 	
 	public static final String playerCharacterID = "ENTITY_PLAYERCHARACTER_";
+	
+	public static final String fullyStarted = "[SERVER][UNIVERSE] LOADING SECTOR... (2, 2, 2)";
 }
