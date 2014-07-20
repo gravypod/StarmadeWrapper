@@ -27,6 +27,7 @@ public class ConsoleMonitor extends Thread {
 			final String line = sc.nextLine().trim();
 			
 			if (line.startsWith("/")) {
+				System.out.println("Executing " + line);
 				server.exec(line);
 			}
 			

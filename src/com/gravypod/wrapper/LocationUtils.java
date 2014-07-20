@@ -50,6 +50,11 @@ public class LocationUtils {
 	public static Sector[] sectorsFromString(final String line) {
 
         List<Sector> sectorList = new ArrayList<Sector>();
+        
+        if (!line.contains("Sector[") || !line.contains(")") || !line.contains(" -> ")) {
+        	return new Sector[0];
+        }
+        
         String[] sectors = line.substring(line.indexOf("Sector[", 0), line.lastIndexOf(")") + 1).split(" -> ");
 
         for (String sector : sectors) {
