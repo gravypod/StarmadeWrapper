@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +52,9 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	private final CommandManager commandManager = new CommandManager(this);
 	
 	private final PluginManager pluginManager = new PluginManager(logger, this, commandManager);
+	
+	private ScheduledExecutorService schedulePool;
+	private ExecutorService threadPool;
 	
 	public Server(final File directory) {
 	
@@ -102,11 +108,16 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 			logger.log(Level.SEVERE, "Could not read BlockTypes.properties. No block data will be usabel by plugins", e);
 		}
 		
+		
+		schedulePool = Executors.newScheduledThreadPool(6, Executors.defaultThreadFactory());
+		threadPool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		
 		registerCommands();
 		pluginManager.loadPlugins();
 		consoleData.run();
 		pluginManager.disablePlugins();
-		
+		getThreadPool().shutdownNow();
+		getSchedulerPool().shutdownNow();
 	}
 	
 	public synchronized boolean logoutUser(final String name, final int x, final int y, final int z) {
@@ -356,5 +367,17 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	
 		return logger;
 	}
+	
+	
+	@Override
+	public ExecutorService getThreadPool() {
+		return threadPool;
+	}
+	
+	@Override
+	public ScheduledExecutorService getSchedulerPool() {
+		return schedulePool;
+	}
+	
 	
 }

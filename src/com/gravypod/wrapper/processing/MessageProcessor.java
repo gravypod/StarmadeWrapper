@@ -96,18 +96,21 @@ public class MessageProcessor extends Thread {
 		
 		int firstSpace = message.indexOf(' ');
 		
+		final String command, args[];
+		
 		if (firstSpace == -1) {
 			firstSpace = message.length();
+			command = message.substring(1).trim();
+			args = EMPTY_ARGS;
+		} else {
+			command = message.substring(1, firstSpace);
+			args = message.substring(firstSpace).trim().split(" ");
 		}
-		
-		final String command = message.substring(1, firstSpace).trim();
 		
 		if (!server.getCommandManager().isRegistered(command)) {
 			server.pm(user, "The command " + command + " is unknown.");
 			return;
 		}
-		
-		final String[] args = message.substring(firstSpace).trim().split(" ");
 		
 		try {
 			server.getCommandManager().execute(user, command, args);
