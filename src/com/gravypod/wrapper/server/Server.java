@@ -177,6 +177,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		return config;
 	}
 	
+	@Override
 	public File getStarmadeDirectory() {
 	
 		return new File(dataFolder, config.starmadeDirectory);

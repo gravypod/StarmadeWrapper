@@ -6,9 +6,13 @@ import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.starmadewrapper.plugins.events.Event;
 import com.gravypod.starmadewrapper.plugins.events.Events;
 import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.EnterShip;
+import com.gravypod.starmadewrapper.plugins.events.players.LeaveShip;
 import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.PlayerKillPlayer;
 import com.gravypod.starmadewrapper.plugins.events.players.SectorChangeEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.ShipKillPlayer;
 import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
@@ -55,6 +59,16 @@ public class MessageProcessor extends Thread {
 						continue;
 					} else if (line.startsWith(IdentifierConstants.reciveWisper)) {
 						wisper(line);
+						continue;
+					} else if (line.startsWith(IdentifierConstants.shipChange)) {
+						shipChange(line);
+						continue;
+					} else if (line.contains(IdentifierConstants.shipKillPlayer)) {
+						shipKillPlayer(line);
+						continue;
+					} else if (line.contains(IdentifierConstants.playerKillPlayer)) {
+						playerKillPlayer(line);
+						continue;
 					}
 				} catch (Exception e) {
 					System.out.println("Error parsing starmade message " + line);
@@ -70,6 +84,36 @@ public class MessageProcessor extends Thread {
 		ServerWrapper.getLogger().info("Closing out of " + getClass().getName());
 	}
 	
+	private void playerKillPlayer(String line) {
+		String trimmed = line.substring(line.indexOf(":"));
+		
+		String username = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
+		username = username.substring(username.lastIndexOf("_") + 1);
+		String killed = trimmed.substring(trimmed.lastIndexOf("[") + 1, trimmed.lastIndexOf(";"));
+		Events.fireEvent(new PlayerKillPlayer(killed.trim(), username.trim()));
+		
+	}
+
+	private void shipKillPlayer(String line) {
+		String trimmed = line.substring(line.indexOf(": "));
+		String ship = trimmed.substring(trimmed.indexOf("[") + 1, trimmed.indexOf("]")).trim();
+		String username = trimmed.substring(trimmed.lastIndexOf("[") + 1, trimmed.lastIndexOf(";")).trim();
+		Events.fireEvent(new ShipKillPlayer(ship.trim(), username.trim()));
+	}
+
+	private void shipChange(String line) {
+		String s = line.replace("[CONTROLLER][ADD-UNIT] (Server(0)): PlS[", "");
+		String username = s.substring(0, s.indexOf(";")).trim();
+		String part = s.substring(s.lastIndexOf('[') + 1, s.lastIndexOf(']')).trim();
+		
+		if (part.startsWith("(ENTITY_PLAYERCHARACTER_")) {
+			Events.fireEvent(new LeaveShip(username.trim()));
+		} else {
+			Events.fireEvent(new EnterShip(username.trim(), part.trim()));
+		}
+		
+	}
+
 	private void wisper(String line) {
 	
 		line = line.replace(IdentifierConstants.reciveWisper, "").trim(); // message start

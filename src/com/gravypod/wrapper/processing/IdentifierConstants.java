@@ -2,6 +2,12 @@ package com.gravypod.wrapper.processing;
 
 public class IdentifierConstants {
 	
+	public static final String playerKillPlayer = "Announcing kill: PlayerCharacter";
+	
+	public static final String shipKillPlayer = "] Announcing kill: Ship";
+	
+	public static final String shipChange = "[CONTROLLER][ADD-UNIT] (Server(0)): PlS[";
+	
 	public static final String loginIdentifier = "[SERVER][LOGIN] login received. returning login info for RegisteredClient: ";
 	
 	public static final String chatMessageIdentifier = "[CHAT] Server(0) ";
