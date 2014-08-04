@@ -213,3 +213,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/starmade/
+/users/
+/plugins/
+/config.yml
+/README.txt
+/StarMade-latest.zip
