@@ -109,8 +109,8 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		}
 		
 		
-		schedulePool = Executors.newScheduledThreadPool(6, Executors.defaultThreadFactory());
-		threadPool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		schedulePool = Executors.newScheduledThreadPool(6);
+		threadPool = Executors.newCachedThreadPool();
 		
 		registerCommands();
 		pluginManager.loadPlugins();

@@ -72,8 +72,7 @@ public class MessageProcessor extends Thread {
 					}
 				} catch (Exception e) {
 					System.out.println("Error parsing starmade message " + line);
-					e.printStackTrace(); // Prevent 1 exception from killing the
-											// message processor thread.
+					e.printStackTrace(); // Prevent 1 exception from killing the message processor thread.
 					continue;
 				}
 			} catch (final InterruptedException e) {
@@ -123,11 +122,8 @@ public class MessageProcessor extends Thread {
 			return;
 		}
 		
-		final String user = line.substring(0, colonIndex); // Everything before
-		// colon
-		final String message = line.substring(colonIndex + 1).trim(); // Everything
-		// after
-		// colon
+		final String user = line.substring(0, colonIndex); // Everything before colon
+		final String message = line.substring(colonIndex + 1).trim(); // Everything after colon
 		
 		final Event event = Events.fireEvent(new ChatEvent(user, message));
 		if (event.isCancelled()) {
@@ -201,15 +197,16 @@ public class MessageProcessor extends Thread {
 	}
 	
 	private void move(final String line) {
-	
-		final int playerCharLoc = line.indexOf(IdentifierConstants.playerCharacterID);
-		final int playerCharEnd = playerCharLoc + IdentifierConstants.playerCharacterID.length();
-		final String player = line.substring(playerCharEnd, line.indexOf(')', playerCharEnd));
+		
 		final Sector[] movement = LocationUtils.sectorsFromString(line);
 		
 		if (movement.length != 2) {
 			return;
 		}
+		
+		final int playerCharLoc = line.indexOf(IdentifierConstants.playerCharacterID);
+		final int playerCharEnd = playerCharLoc + IdentifierConstants.playerCharacterID.length();
+		final String player = line.substring(playerCharEnd, line.indexOf(')', playerCharEnd));
 		
 		final Sector from = movement[0];
 		final Sector to = movement[1];

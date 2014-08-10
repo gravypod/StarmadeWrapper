@@ -12,7 +12,6 @@ public class ServerWrapper {
 	
 	private static final Logger logger = Logger.getLogger(ServerWrapper.class.getName());
 	
-	private static StarmadeServerThread serverThread;
 	
 	public static void main(final String[] args) {
 	
@@ -25,9 +24,19 @@ public class ServerWrapper {
 		final ConsoleMonitor consoleMonitor = new ConsoleMonitor(server);
 		consoleMonitor.start();
 		
-		serverThread = new StarmadeServerThread(server);
+		server.getRunning().set(true);
 		
-		ServerWrapper.getServerThread().start();
+		while (true) {
+			while (server.getRunning().get()) {
+				ServerWrapper.getLogger().info("Starting server");
+				server.run();
+			}
+			try {
+				Thread.sleep(50);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	
@@ -68,11 +77,6 @@ public class ServerWrapper {
 	public static Logger getLogger() {
 	
 		return ServerWrapper.logger;
-	}
-	
-	public static Thread getServerThread() {
-	
-		return ServerWrapper.serverThread;
 	}
 	
 }
