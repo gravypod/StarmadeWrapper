@@ -2,6 +2,7 @@ package com.gravypod.wrapper.processing;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.gravypod.starmadewrapper.LocationUtils;
 import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.starmadewrapper.plugins.events.Event;
 import com.gravypod.starmadewrapper.plugins.events.Events;
@@ -13,7 +14,6 @@ import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.PlayerKillPlayer;
 import com.gravypod.starmadewrapper.plugins.events.players.SectorChangeEvent;
 import com.gravypod.starmadewrapper.plugins.events.players.ShipKillPlayer;
-import com.gravypod.wrapper.LocationUtils;
 import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
 import com.gravypod.wrapper.server.User;

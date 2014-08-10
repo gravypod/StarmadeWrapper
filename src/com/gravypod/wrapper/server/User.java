@@ -3,8 +3,8 @@ package com.gravypod.wrapper.server;
 import java.util.Collections;
 import java.util.List;
 
+import com.gravypod.starmadewrapper.LocationUtils;
 import com.gravypod.starmadewrapper.Sector;
-import com.gravypod.wrapper.LocationUtils;
 
 public class User implements com.gravypod.starmadewrapper.User {
 	
