@@ -114,8 +114,9 @@ public class MessageProcessor extends Thread {
 	}
 
 	private void wisper(String line) {
-	
+		
 		line = line.replace(IdentifierConstants.reciveWisper, "").trim(); // message start
+		
 		final int colonIndex = line.indexOf(':'); // find the colon
 		
 		if (colonIndex == -1) {
@@ -123,9 +124,18 @@ public class MessageProcessor extends Thread {
 		}
 		
 		final String user = line.substring(0, colonIndex); // Everything before colon
-		final String message = line.substring(colonIndex + 1).trim(); // Everything after colon
+		
+		line = line.substring(colonIndex + 1).trim(); // Remove the user from tyhe start of the string.
+		
+		final int pmStart = line.indexOf("[PM]");
+		final int pmEnd = line.indexOf(']', pmStart + 4);
+		
+		//final String to = line.substring(pmStart + 5, pmEnd);
+
+		final String message = line.substring(line.indexOf(']', pmEnd) + 1).trim(); // Everything after colon
 		
 		final Event event = Events.fireEvent(new ChatEvent(user, message));
+		
 		if (event.isCancelled()) {
 			return;
 		}
