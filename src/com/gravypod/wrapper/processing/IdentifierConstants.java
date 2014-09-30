@@ -21,4 +21,7 @@ public class IdentifierConstants {
 	public static final String fullyStarted = "[SERVER][UNIVERSE] LOADING SECTOR... (2, 2, 2)";
 	
 	public static final String reciveWisper = "[SERVER][CHAT][WISPER] ";
+
+    public static final String shopBuy = "[SERVER] Executing Shopping Buy: ";
+
 }

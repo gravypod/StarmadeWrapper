@@ -6,14 +6,7 @@ import com.gravypod.starmadewrapper.LocationUtils;
 import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.starmadewrapper.plugins.events.Event;
 import com.gravypod.starmadewrapper.plugins.events.Events;
-import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
-import com.gravypod.starmadewrapper.plugins.events.players.EnterShip;
-import com.gravypod.starmadewrapper.plugins.events.players.LeaveShip;
-import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
-import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
-import com.gravypod.starmadewrapper.plugins.events.players.PlayerKillPlayer;
-import com.gravypod.starmadewrapper.plugins.events.players.SectorChangeEvent;
-import com.gravypod.starmadewrapper.plugins.events.players.ShipKillPlayer;
+import com.gravypod.starmadewrapper.plugins.events.players.*;
 import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
 import com.gravypod.wrapper.server.User;
@@ -69,7 +62,10 @@ public class MessageProcessor extends Thread {
 					} else if (line.contains(IdentifierConstants.playerKillPlayer)) {
 						playerKillPlayer(line);
 						continue;
-					}
+					} else if (line.contains(IdentifierConstants.shopBuy)) {
+                        shopBuy(line);
+                        continue;
+                    }
 				} catch (Exception e) {
 					System.out.println("Error parsing starmade message " + line);
 					e.printStackTrace(); // Prevent 1 exception from killing the message processor thread.
@@ -284,5 +280,23 @@ public class MessageProcessor extends Thread {
 		}
 		
 	}
+
+    public void shopBuy(String line) {
+
+        line = line.replace(IdentifierConstants.shopBuy, "");
+
+        final int ofIndex = line.indexOf(" of ");
+        final int quantity = Integer.valueOf(line.substring(0, ofIndex));
+        line = line.substring(ofIndex + 4);
+
+        final int forIndex = line.indexOf(" for ");
+        final String item = line.substring(0, forIndex);
+        line = line.substring(forIndex + 5 + 4);
+
+        final int semiColonIndex = line.indexOf(" ; ");
+        final User player = server.getUser(line.substring(0, semiColonIndex));
+
+        Events.fireEvent(new ShopBuyEvent(quantity, item, player));
+    }
 	
 }
