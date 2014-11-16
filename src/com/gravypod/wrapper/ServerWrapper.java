@@ -1,10 +1,12 @@
 package com.gravypod.wrapper;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
+import com.gravypod.starmadewrapper.plugins.commands.CommandManager;
 import com.gravypod.wrapper.monitors.ConsoleMonitor;
 import com.gravypod.wrapper.server.Server;
 
@@ -21,7 +23,7 @@ public class ServerWrapper {
 		
 		final Server server = new Server(directory);
 		
-		final ConsoleMonitor consoleMonitor = new ConsoleMonitor(server);
+		final ConsoleMonitor consoleMonitor = new ConsoleMonitor(server, new AtomicReference<CommandManager>(server.getCommandManager()));
 		consoleMonitor.start();
 		
 		server.getRunning().set(true);
