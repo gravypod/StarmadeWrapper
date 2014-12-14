@@ -3,7 +3,6 @@ package com.gravypod.wrapper.server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,7 +71,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		
 		config = dataSaver.loadConfig();
 		
-		final FileInfo fileInfo = new FileInfo(directory, getStarmadeDirectory());
+		final FileInfo fileInfo = new FileInfo(directory, getStarmadeDirectory(), Executors.newScheduledThreadPool(1));
 		
 		this.fileInfo = fileInfo;
 		
@@ -262,15 +261,15 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	}
 	
 	@Override
-	public List<String> getDonors() {
+	public boolean isDonor(String username) {
 	
-		return getFileInfo().getDonors();
+		return getFileInfo().isDonor(username);
 	}
 	
 	@Override
-	public List<String> getAdmins() {
+	public boolean isAdmin(String username) {
 	
-		return getFileInfo().getAdmins();
+		return getFileInfo().isAdmin(username);
 	}
 	
 	@Override
