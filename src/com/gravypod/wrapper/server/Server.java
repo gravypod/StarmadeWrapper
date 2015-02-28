@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.gravypod.starmadewrapper.Material;
+import com.gravypod.starmadewrapper.config.ServerConfig;
 import com.gravypod.starmadewrapper.plugins.PluginManager;
 import com.gravypod.starmadewrapper.plugins.commands.CommandManager;
 import com.gravypod.wrapper.VersionManager;
@@ -187,6 +188,7 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		return dataSaver;
 	}
 	
+	@Override
 	public ServerConfig getServerConfig() {
 	
 		return serverConfig;
@@ -195,43 +197,43 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 	@Override
 	public int getMaxClients() {
 	
-		return serverConfig.getInt(ServerConfig.ConfigItem.MAX_CLIENTS);
+		return serverConfig.getInt(ServerConfig.MAX_CLIENTS);
 	}
 	
 	@Override
 	public int getThrustSpeedLimit() {
 	
-		return serverConfig.getInt(ServerConfig.ConfigItem.THRUST_SPEED_LIMIT);
+		return serverConfig.getInt(ServerConfig.THRUST_SPEED_LIMIT);
 	}
 	
 	@Override
 	public int getStartingCredits() {
 	
-		return serverConfig.getInt(ServerConfig.ConfigItem.STARTING_CREDITS);
+		return serverConfig.getInt(ServerConfig.STARTING_CREDITS);
 	}
 	
 	@Override
 	public long getUniverseDay() {
 	
-		return serverConfig.getLong(ServerConfig.ConfigItem.UNIVERSE_DAY_IN_MS);
+		return serverConfig.getLong(ServerConfig.UNIVERSE_DAY_IN_MS);
 	}
 	
 	@Override
 	public boolean hasWhitelist() {
 	
-		return serverConfig.getBoolean(ServerConfig.ConfigItem.USE_WHITELIST);
+		return serverConfig.getBoolean(ServerConfig.USE_WHITELIST);
 	}
 	
 	@Override
 	public boolean hasEnemySpawning() {
 	
-		return serverConfig.getBoolean(ServerConfig.ConfigItem.ENEMY_SPAWNING);
+		return serverConfig.getBoolean(ServerConfig.ENEMY_SPAWNING);
 	}
 
     @Override
     public boolean useStarMadeAuth() {
 
-        return serverConfig.getBoolean(ServerConfig.ConfigItem.USE_STARMADE_AUTHENTICATION);
+        return serverConfig.getBoolean(ServerConfig.USE_STARMADE_AUTHENTICATION);
     }
 
     public FileInfo getFileInfo() {
