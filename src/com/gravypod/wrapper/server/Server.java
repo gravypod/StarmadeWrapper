@@ -230,13 +230,13 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		return serverConfig.getBoolean(ServerConfig.ENEMY_SPAWNING);
 	}
 
-    @Override
-    public boolean useStarMadeAuth() {
+	@Override
+	public boolean useStarMadeAuth() {
 
-        return serverConfig.getBoolean(ServerConfig.USE_STARMADE_AUTHENTICATION);
-    }
+		return serverConfig.getBoolean(ServerConfig.USE_STARMADE_AUTHENTICATION);
+	}
 
-    public FileInfo getFileInfo() {
+	public FileInfo getFileInfo() {
 	
 		return fileInfo;
 	}
@@ -324,19 +324,19 @@ public class Server implements Runnable, com.gravypod.starmadewrapper.Server {
 		return consoleData;
 	}
 
-    @Override
-    public void setWhitelist(boolean whitelist) {
+	@Override
+	public void setWhitelist(boolean whitelist) {
 
-        consoleData.setWhitelist(whitelist);
-    }
+		consoleData.setWhitelist(whitelist);
+	}
 
-    @Override
-    public void whitelist(String whitelist) {
+	@Override
+	public void whitelist(String whitelist) {
 
-        consoleData.whitelist(whitelist, useStarMadeAuth());
-    }
+		consoleData.whitelist(whitelist, useStarMadeAuth());
+	}
 
-    @Override
+	@Override
 	public void stopServer() {
 	
 		getRunning().set(false);

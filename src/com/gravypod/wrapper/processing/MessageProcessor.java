@@ -283,22 +283,22 @@ public class MessageProcessor extends Thread {
 		
 	}
 
-    public void shopBuy(String line) {
+	public void shopBuy(String line) {
 
-        line = line.replace(IdentifierConstants.shopBuy, "");
+		line = line.replace(IdentifierConstants.shopBuy, "");
 
-        final int ofIndex = line.indexOf(" of ");
-        final int quantity = Integer.valueOf(line.substring(0, ofIndex));
-        line = line.substring(ofIndex + 4);
+		final int ofIndex = line.indexOf(" of ");
+		final int quantity = Integer.valueOf(line.substring(0, ofIndex));
+		line = line.substring(ofIndex + 4);
 
-        final int forIndex = line.indexOf(" for ");
-        final String item = line.substring(0, forIndex);
-        line = line.substring(forIndex + 5 + 4);
+		final int forIndex = line.indexOf(" for ");
+		final String item = line.substring(0, forIndex);
+		line = line.substring(forIndex + 5 + 4);
 
-        final int semiColonIndex = line.indexOf(" ; ");
-        final User player = server.getUser(line.substring(0, semiColonIndex));
+		final int semiColonIndex = line.indexOf(" ; ");
+		final User player = server.getUser(line.substring(0, semiColonIndex));
 
-        Events.fireEvent(new ShopBuyEvent(quantity, item, player));
-    }
+		Events.fireEvent(new ShopBuyEvent(quantity, item, player));
+	}
 	
 }

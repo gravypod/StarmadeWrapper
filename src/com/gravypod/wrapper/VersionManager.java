@@ -61,7 +61,7 @@ public class VersionManager {
 	
 	public void downloadUpdate(final boolean backup) throws IOException {
 	
-		final String remotePath = mirror + desanatizeFile(latestBuild());
+		final String remotePath = mirror + desanitizeFile(latestBuild());
 		BufferedInputStream inputStream = null;
 		FileOutputStream outputStream = null;
 		
@@ -189,7 +189,7 @@ public class VersionManager {
 				continue;
 			}
 			final String[] buildInfo = line.split(" ");
-			final String build = sanatizeFile(buildInfo[0]).trim();
+			final String build = sanitizeFile(buildInfo[0]).trim();
 			final int fileSize = Integer.parseInt(buildInfo[1]);
 			fileSizes.put(build, fileSize);
 			builds.add(build);
@@ -207,12 +207,12 @@ public class VersionManager {
 		return builds.get(builds.size() - 1);
 	}
 	
-	private String sanatizeFile(final String name) {
+	private String sanitizeFile(final String name) {
 	
 		return name.replace("starmade-build_", "").replace(".zip", "");
 	}
 	
-	private String desanatizeFile(final String newName) {
+	private String desanitizeFile(final String newName) {
 	
 		return "starmade-build_" + newName + ".zip";
 	}
