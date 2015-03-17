@@ -1,12 +1,23 @@
 package com.gravypod.wrapper.processing;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.gravypod.starmadewrapper.LocationUtils;
 import com.gravypod.starmadewrapper.Sector;
 import com.gravypod.starmadewrapper.plugins.events.Event;
 import com.gravypod.starmadewrapper.plugins.events.Events;
-import com.gravypod.starmadewrapper.plugins.events.players.*;
+import com.gravypod.starmadewrapper.plugins.events.players.ChatEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.EnterShip;
+import com.gravypod.starmadewrapper.plugins.events.players.LeaveShip;
+import com.gravypod.starmadewrapper.plugins.events.players.LoginEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.LogoutEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.PlayerKillPlayer;
+import com.gravypod.starmadewrapper.plugins.events.players.SectorChangeEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.ShipKillPlayer;
+import com.gravypod.starmadewrapper.plugins.events.players.ShopBuyEvent;
+import com.gravypod.starmadewrapper.plugins.events.players.WisperEvent;
 import com.gravypod.wrapper.ServerWrapper;
 import com.gravypod.wrapper.server.Server;
 import com.gravypod.wrapper.server.User;
@@ -16,6 +27,9 @@ public class MessageProcessor extends Thread {
 	private final BlockingQueue<String> messages;
 	private final String[] EMPTY_ARGS = new String[0];
 	private final Server server;
+	
+	
+	private static final Pattern chatRegex = Pattern.compile("SERVER RECEIVED CHAT; ENQUEUE: ChatMessage \\[message=(?<message>.*), sender=(?<sender>.*), receiverType=(?<receiverType>.*), receiver=(?<receiver>.*)\\]");
 	
 	public MessageProcessor(final Server server, final BlockingQueue<String> messages) {
 	
@@ -35,6 +49,12 @@ public class MessageProcessor extends Thread {
 				
 				final String line = messages.take();
 				
+				Matcher m = chatRegex.matcher(line);
+				if (m.matches()) {
+					System.out.println(line);
+					chat(m);
+				}
+				
 				try {
 					if (line.startsWith(IdentifierConstants.fullyStarted)) {
 						server.getServerConfig().reloadConfig(); // Reload Config once StarMade has updated it for use.
@@ -46,9 +66,6 @@ public class MessageProcessor extends Thread {
 						continue;
 					} else if (line.contains(IdentifierConstants.logoutMessageIdentifier)) {
 						logout(line);
-						continue;
-					} else if (line.startsWith(IdentifierConstants.chatMessageIdentifier)) {
-						chat(line);
 						continue;
 					} else if (line.startsWith(IdentifierConstants.reciveWisper)) {
 						wisper(line);
@@ -236,17 +253,11 @@ public class MessageProcessor extends Thread {
 		
 	}
 	
-	private void chat(String line) {
+	private void chat(Matcher matcher) {
 	
-		line = line.replace(IdentifierConstants.chatMessageIdentifier, "").trim(); // Remove the chat ID
-		final int colonIndex = line.indexOf(':'); // find the colon
 		
-		if (colonIndex == -1) {
-			return;
-		}
-		
-		final String user = line.substring(0, colonIndex); // Everything before colon
-		final String message = line.substring(colonIndex + 1).trim(); // Everything after colon
+		final String user = matcher.group("sender"); // Everything before colon
+		final String message = matcher.group("message"); // Everything after colon
 		
 		final Event event = Events.fireEvent(new ChatEvent(user, message));
 		if (event.isCancelled()) {
