@@ -29,7 +29,7 @@ public class ConsoleManager implements Runnable {
 		this.messages = messages;
 		this.config = config;
 		this.starmadeDir = starmadeDir;
-		builder = creatBuilder();
+		builder = createBuilder();
 	}
 	
 	@Override
@@ -122,19 +122,19 @@ public class ConsoleManager implements Runnable {
 		exec("/god_mode " + user + " " + enabled);
 	}
 
-    public synchronized void setWhitelist(final boolean whitelist) {
+	public synchronized void setWhitelist(final boolean whitelist) {
 
-        exec("/whitelist_activate " + whitelist);
-    }
+		exec("/whitelist_activate " + whitelist);
+	}
 
-    public synchronized void whitelist(final String username, boolean auth) {
+	public synchronized void whitelist(final String username, boolean auth) {
 
-        if (auth) {
-            exec("/whitelist_account " + username);
-        } else {
-            exec("/whitelist_name " + username);
-        }
-    }
+		if (auth) {
+			exec("/whitelist_account " + username);
+		} else {
+			exec("/whitelist_name " + username);
+		}
+	}
 	
 	public synchronized PrintWriter getWriter() {
 	
@@ -146,7 +146,7 @@ public class ConsoleManager implements Runnable {
 		writer = new PrintWriter(os);
 	}
 	
-	private ProcessBuilder creatBuilder() {
+	private ProcessBuilder createBuilder() {
 	
 		final ProcessBuilder builder = new ProcessBuilder(config.launchCommand.split(" "));
 		builder.redirectErrorStream(true);
