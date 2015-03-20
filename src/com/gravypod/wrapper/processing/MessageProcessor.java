@@ -29,7 +29,7 @@ public class MessageProcessor extends Thread {
 	private final Server server;
 	
 	
-	private static final Pattern chatRegex = Pattern.compile("SERVER RECEIVED CHAT; ENQUEUE: ChatMessage \\[message=(?<message>.*), sender=(?<sender>.*), receiverType=(?<receiverType>.*), receiver=(?<receiver>.*)\\]");
+	private static final Pattern chatRegex = Pattern.compile("\\[CHANNELROUTER\\] RECEIVED MESSAGE ON Server\\([0-9]*\\): \\[CHAT\\]\\[sender=(?<sender>.*)\\]\\[receiverType=(?<receiverType>.*)\\]\\[receiver=(?<receiver>.*)\\]\\[message=(?<message>.*)\\]");
 	
 	public MessageProcessor(final Server server, final BlockingQueue<String> messages) {
 	
@@ -51,7 +51,6 @@ public class MessageProcessor extends Thread {
 				
 				Matcher m = chatRegex.matcher(line);
 				if (m.matches()) {
-					System.out.println(line);
 					chat(m);
 				}
 				
