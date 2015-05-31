@@ -27,15 +27,16 @@ public class MessageProcessor extends Thread {
 	private final BlockingQueue<String> messages;
 	private final String[] EMPTY_ARGS = new String[0];
 	private final Server server;
-	
-	
+
 	private static final Pattern chatRegex = Pattern.compile("\\[CHANNELROUTER\\] RECEIVED MESSAGE ON Server\\([0-9]*\\): \\[CHAT\\]\\[sender=(?<sender>.*)\\]\\[receiverType=(?<receiverType>.*)\\]\\[receiver=(?<receiver>.*)\\]\\[message=(?<message>.*)\\]");
-	
+
+	private static final String PLAYER_CHARACTER_ID = "ENTITY_PLAYERCHARACTER_";
+
 	public MessageProcessor(final Server server, final BlockingQueue<String> messages) {
 	
 		this.server = server;
 		this.messages = messages;
-		setName("MessagePrwocessor-Thread");
+		setName("MessageProcessor-Thread");
 		setPriority(Thread.MIN_PRIORITY);
 		setDaemon(true);
 	}
@@ -55,33 +56,10 @@ public class MessageProcessor extends Thread {
 				}
 				
 				try {
-					if (line.startsWith(IdentifierConstants.fullyStarted)) {
-						server.getServerConfig().reloadConfig(); // Reload Config once StarMade has updated it for use.
-					} else if (line.startsWith(IdentifierConstants.loginIdentifier)) {
-						login(line);
-						continue;
-					} else if (line.contains(IdentifierConstants.movementIdentifier)) {
-						move(line);
-						continue;
-					} else if (line.contains(IdentifierConstants.logoutMessageIdentifier)) {
-						logout(line);
-						continue;
-					} else if (line.startsWith(IdentifierConstants.reciveWisper)) {
-						wisper(line);
-						continue;
-					} else if (line.startsWith(IdentifierConstants.shipChange)) {
-						shipChange(line);
-						continue;
-					} else if (line.contains(IdentifierConstants.shipKillPlayer)) {
-						shipKillPlayer(line);
-						continue;
-					} else if (line.contains(IdentifierConstants.playerKillPlayer)) {
-						playerKillPlayer(line);
-						continue;
-					} else if (line.contains(IdentifierConstants.shopBuy)) {
-                        shopBuy(line);
-                        continue;
-                    }
+					Identifier identifier = Identifier.findMatch(line);
+					if (identifier != null) {
+						identifier.invoke(this, line);
+					}
 				} catch (Exception e) {
 					System.out.println("Error parsing starmade message " + line);
 					e.printStackTrace(); // Prevent 1 exception from killing the message processor thread.
@@ -94,8 +72,12 @@ public class MessageProcessor extends Thread {
 		}
 		ServerWrapper.getLogger().info("Closing out of " + getClass().getName());
 	}
-	
-	private void playerKillPlayer(String line) {
+
+	public void fullyStarted(String ignored) {
+		this.server.getServerConfig().reloadConfig();
+	}
+
+	public void playerKillPlayer(String line) {
 		String trimmed = line.substring(line.indexOf(":"));
 		
 		String username = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
@@ -105,14 +87,14 @@ public class MessageProcessor extends Thread {
 		
 	}
 
-	private void shipKillPlayer(String line) {
+	public void shipKillPlayer(String line) {
 		String trimmed = line.substring(line.indexOf(": "));
 		String ship = trimmed.substring(trimmed.indexOf("[") + 1, trimmed.indexOf("]")).trim();
 		String username = trimmed.substring(trimmed.lastIndexOf("[") + 1, trimmed.lastIndexOf(";")).trim();
 		Events.fireEvent(new ShipKillPlayer(ship.trim(), username.trim()));
 	}
 
-	private void shipChange(String line) {
+	public void shipChange(String line) {
 		String s = line.replace("[CONTROLLER][ADD-UNIT] (Server(0)): PlS[", "");
 		String username = s.substring(0, s.indexOf(";")).trim();
 		String part = s.substring(s.lastIndexOf('[') + 1, s.lastIndexOf(']')).trim();
@@ -125,11 +107,11 @@ public class MessageProcessor extends Thread {
 		
 	}
 
-	private void wisper(String line) {
+	public void whisper(String line) {
 		
 		// [SERVER][CHAT][WISPER] gravypod2: [PM][gravypod1] Hello World
 		
-		line = line.replace(IdentifierConstants.reciveWisper, "").trim(); // message start
+		line = line.replace(Identifier.WHISPER.getPattern(), "").trim(); // message start
 		
 		final int colonIndex = line.indexOf(':'); // find the colon
 		
@@ -183,10 +165,10 @@ public class MessageProcessor extends Thread {
 		}
 		
 	}
+
+	public void login(final String line) {
 	
-	private void login(final String line) {
-	
-		final String newMessage = line.replace(IdentifierConstants.loginIdentifier, "");
+		final String newMessage = line.replace(Identifier.LOGIN.getPattern(), "");
 		
 		final int firstString = newMessage.indexOf(' ');
 		
@@ -197,16 +179,16 @@ public class MessageProcessor extends Thread {
 		final String username = newMessage.substring(0, firstString).trim();
 		
 		final Event e = Events.fireEvent(new LoginEvent(username));
-		
+
 		if (e.isCancelled()) {
 			server.exec("/kick " + username);
 		}
 		
 	}
+
+	public void logout(String line) {
 	
-	private void logout(String line) {
-	
-		line = line.replace(IdentifierConstants.logoutMessageIdentifier, "");
+		line = line.replace(Identifier.LOGOUT.getPattern(), "");
 		final String user = line.substring(0, line.indexOf(' '));
 		final Sector location = LocationUtils.sectorFromString(line);
 		try {
@@ -219,8 +201,8 @@ public class MessageProcessor extends Thread {
 			return;
 		}
 	}
-	
-	private void move(final String line) {
+
+	public void move(final String line) {
 		
 		final Sector[] movement = LocationUtils.sectorsFromString(line);
 		
@@ -228,8 +210,8 @@ public class MessageProcessor extends Thread {
 			return;
 		}
 		
-		final int playerCharLoc = line.indexOf(IdentifierConstants.playerCharacterID);
-		final int playerCharEnd = playerCharLoc + IdentifierConstants.playerCharacterID.length();
+		final int playerCharLoc = line.indexOf(PLAYER_CHARACTER_ID);
+		final int playerCharEnd = playerCharLoc + PLAYER_CHARACTER_ID.length();
 		final String player = line.substring(playerCharEnd, line.indexOf(')', playerCharEnd));
 		
 		final Sector from = movement[0];
@@ -251,8 +233,8 @@ public class MessageProcessor extends Thread {
 		user.setLocation(to);
 		
 	}
-	
-	private void chat(Matcher matcher) {
+
+	public void chat(Matcher matcher) {
 	
 		
 		final String user = matcher.group("sender"); // Everything before colon
@@ -295,7 +277,7 @@ public class MessageProcessor extends Thread {
 
 	public void shopBuy(String line) {
 
-		line = line.replace(IdentifierConstants.shopBuy, "");
+		line = line.replace(Identifier.SHOP_BUY.getPattern(), "");
 
 		final int ofIndex = line.indexOf(" of ");
 		final int quantity = Integer.valueOf(line.substring(0, ofIndex));
